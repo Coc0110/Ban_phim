@@ -47,4 +47,10 @@ class DrawingKeyboardServiceTest {
         assertEquals(1, drawingView.getStrokes().size)
         assertTrue(ShadowToast.shownToastCount() >= 1)
     }
+
+    @Test
+    fun `onEvaluateInputViewShown returns true even when hardware keyboard is present`() {
+        val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        assertTrue(service.onEvaluateInputViewShown())
+    }
 }

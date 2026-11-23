@@ -9,6 +9,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.banphim.R
 
 class DrawingView @JvmOverloads constructor(
     context: Context,
@@ -78,6 +79,13 @@ class DrawingView @JvmOverloads constructor(
     fun canUndo(): Boolean = history.canUndo()
 
     fun canRedo(): Boolean = history.canRedo()
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val desiredHeight = resources.getDimensionPixelSize(R.dimen.keyboard_height)
+        val measuredWidth = getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
+        val measuredHeight = resolveSize(desiredHeight, heightMeasureSpec)
+        setMeasuredDimension(measuredWidth, measuredHeight)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)

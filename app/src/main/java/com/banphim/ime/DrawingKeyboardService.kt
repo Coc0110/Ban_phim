@@ -29,6 +29,10 @@ class DrawingKeyboardService : InputMethodService() {
     private lateinit var stripPenColor: ColorStripView
     private lateinit var stripBgColor: ColorStripView
 
+    override fun onEvaluateInputViewShown(): Boolean = true
+
+    override fun onEvaluateFullscreenMode(): Boolean = false
+
     override fun onCreateInputView(): View {
         val root = layoutInflater.inflate(R.layout.keyboard_drawing, null)
 

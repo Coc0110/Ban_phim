@@ -1,7 +1,9 @@
 package com.banphim.drawing
 
 import android.view.MotionEvent
+import android.view.View
 import androidx.test.core.app.ApplicationProvider
+import com.banphim.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -38,5 +40,18 @@ class DrawingViewTest {
         assertEquals(1, historyChangedCount)
         assertTrue(view.canUndo())
         assertEquals(1, view.getStrokes().size)
+    }
+
+    @Test
+    fun `drawing view measures to keyboard_height when height spec is unspecified or at_most`() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val view = DrawingView(context)
+        val expectedHeight = context.resources.getDimensionPixelSize(R.dimen.keyboard_height)
+
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        assertEquals(expectedHeight, view.measuredHeight)
     }
 }

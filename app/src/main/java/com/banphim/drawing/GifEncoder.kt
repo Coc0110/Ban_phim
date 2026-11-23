@@ -45,19 +45,8 @@ object GifEncoder {
             out.write(rgb and 0xFF)
         }
 
-        // Netscape 2.0 Application Extension (infinite loop for animated GIF)
-        out.write(0x21)
-        out.write(0xFF)
-        out.write(0x0B)
-        out.write("NETSCAPE2.0".toByteArray(Charsets.US_ASCII))
-        out.write(0x03)
-        out.write(0x01)
-        writeShortLE(out, 0)
-        out.write(0x00)
-
         val compressed = lzwCompress(indices)
-        writeFrame(out, w, h, compressed, delayCs = 50)
-        writeFrame(out, w, h, compressed, delayCs = 50)
+        writeFrame(out, w, h, compressed, delayCs = 0)
 
         out.write(0x3B) // GIF Trailer
         out.flush()

@@ -29,7 +29,6 @@ class GifEncoderTest {
         assertTrue(bytes.size > 20)
         assertEquals("GIF89a", String(bytes, 0, 6, Charsets.US_ASCII))
         assertEquals(0x3B.toByte(), bytes.last())
-        assertTrue(String(bytes, Charsets.US_ASCII).contains("NETSCAPE2.0"))
 
         val decoded = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         assertNotNull(decoded)

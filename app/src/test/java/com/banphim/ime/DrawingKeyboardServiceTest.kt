@@ -70,4 +70,29 @@ class DrawingKeyboardServiceTest {
         btnClear.performClick()
         assertEquals(View.GONE, btnClear.visibility)
     }
+
+    @Test
+    fun `selected pen and canvas colors persist across input view recreation`() {
+        val service1 = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        val root1 = service1.onCreateInputView()
+        val stripPen = root1.findViewById<ColorStripView>(R.id.stripPenColor)
+        val stripBg = root1.findViewById<ColorStripView>(R.id.stripBgColor)
+
+        stripPen.measure(200, 40)
+        stripPen.layout(0, 0, 200, 40)
+        stripPen.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 20f, 0))
+        val chosenPen = stripPen.selectedColor
+
+        stripBg.measure(40, 200)
+        stripBg.layout(0, 0, 40, 200)
+        stripBg.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 20f, 50f, 0))
+        val chosenBg = stripBg.selectedColor
+
+        val service2 = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        val root2 = service2.onCreateInputView()
+        val drawingView2 = root2.findViewById<DrawingView>(R.id.drawingView)
+
+        assertEquals(chosenPen, drawingView2.getPenColor())
+        assertEquals(chosenBg, drawingView2.getCanvasColor())
+    }
 }

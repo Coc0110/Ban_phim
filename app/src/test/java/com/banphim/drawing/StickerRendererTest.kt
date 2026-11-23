@@ -75,4 +75,20 @@ class StickerRendererTest {
         assertTrue("Expected width > 240 to cover both strokes, was ${bmp.width}", bmp.width > 240)
         assertTrue("Expected height > 150 to cover both strokes, was ${bmp.height}", bmp.height > 150)
     }
+
+    @Test
+    fun `renderToFile writes webp file when mimeType is image webp`() {
+        val stroke = Stroke(
+            path = Path().apply { moveTo(0f, 0f); lineTo(50f, 50f) },
+            color = Color.BLUE,
+            strokeWidth = 10f,
+            bounds = RectF(0f, 0f, 50f, 50f)
+        )
+        val dir = createTempDirectory("stickers_webp").toFile()
+        val file = StickerRenderer.renderToFile(listOf(stroke), dir, "image/webp")
+        assertNotNull(file)
+        assertTrue(file!!.name.endsWith(".webp"))
+        assertTrue(file.exists() && file.length() > 0L)
+        dir.deleteRecursively()
+    }
 }

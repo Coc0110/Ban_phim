@@ -3,7 +3,9 @@ package com.banphim.ime
 import android.net.Uri
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.inputmethod.EditorInfoCompat
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,8 +29,27 @@ class StickerCommitterTest {
     }
 
     @Test
+    fun `preferredMimeType prefers webp over png when supported`() {
+        val infoBoth = EditorInfo().apply {
+            EditorInfoCompat.setContentMimeTypes(this, arrayOf("image/png", "image/webp"))
+        }
+        val infoPngOnly = EditorInfo().apply {
+            EditorInfoCompat.setContentMimeTypes(this, arrayOf("image/png"))
+        }
+        val infoWild = EditorInfo().apply {
+            EditorInfoCompat.setContentMimeTypes(this, arrayOf("image/*"))
+        }
+        val infoNone = EditorInfo()
+
+        assertEquals("image/webp", StickerCommitter.preferredMimeType(infoBoth))
+        assertEquals("image/png", StickerCommitter.preferredMimeType(infoPngOnly))
+        assertEquals("image/webp", StickerCommitter.preferredMimeType(infoWild))
+        assertNull(StickerCommitter.preferredMimeType(infoNone))
+    }
+
+    @Test
     fun `commitSticker returns false when inputConnection is null or unsupported`() {
         val uri = Uri.parse("content://com.banphim.fileprovider/stickers/test.png")
-        assertFalse(StickerCommitter.commitSticker(null, EditorInfo(), uri))
+        assertFalse(StickerCommitter.commitSticker(null, EditorInfo(), uri, "image/png"))
     }
 }

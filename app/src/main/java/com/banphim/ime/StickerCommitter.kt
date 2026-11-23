@@ -10,24 +10,36 @@ import androidx.core.view.inputmethod.InputContentInfoCompat
 
 object StickerCommitter {
 
-    private const val MIME_PNG = "image/png"
+    const val MIME_WEBP = "image/webp"
+    const val MIME_PNG = "image/png"
     private const val MIME_IMAGE_ANY = "image/*"
+    private const val MIME_ANY = "*/*"
 
-    fun supportsPng(editorInfo: EditorInfo?): Boolean {
-        if (editorInfo == null) return false
+    fun preferredMimeType(editorInfo: EditorInfo?): String? {
+        if (editorInfo == null) return null
         val mimeTypes = EditorInfoCompat.getContentMimeTypes(editorInfo)
-        return mimeTypes.any { it.equals(MIME_PNG, ignoreCase = true) || it.equals(MIME_IMAGE_ANY, ignoreCase = true) }
+        val acceptsWildcard = mimeTypes.any {
+            it.equals(MIME_IMAGE_ANY, ignoreCase = true) || it.equals(MIME_ANY, ignoreCase = true)
+        }
+        val acceptsWebp = acceptsWildcard || mimeTypes.any { it.equals(MIME_WEBP, ignoreCase = true) }
+        if (acceptsWebp) return MIME_WEBP
+        val acceptsPng = mimeTypes.any { it.equals(MIME_PNG, ignoreCase = true) }
+        if (acceptsPng) return MIME_PNG
+        return null
     }
+
+    fun supportsPng(editorInfo: EditorInfo?): Boolean = preferredMimeType(editorInfo) != null
 
     fun commitSticker(
         inputConnection: InputConnection?,
         editorInfo: EditorInfo?,
-        contentUri: Uri
+        contentUri: Uri,
+        mimeType: String = MIME_WEBP
     ): Boolean {
-        if (inputConnection == null || !supportsPng(editorInfo)) return false
+        if (inputConnection == null || preferredMimeType(editorInfo) == null) return false
         val info = InputContentInfoCompat(
             contentUri,
-            ClipDescription("Drawing Sticker", arrayOf(MIME_PNG)),
+            ClipDescription("Drawing Sticker", arrayOf(mimeType)),
             null
         )
         return InputConnectionCompat.commitContent(

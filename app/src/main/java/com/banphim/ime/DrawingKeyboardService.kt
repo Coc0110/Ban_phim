@@ -58,6 +58,14 @@ class DrawingKeyboardService : InputMethodService() {
         stripPenColor.orientation = ColorStripView.Orientation.HORIZONTAL
         stripBgColor.orientation = ColorStripView.Orientation.VERTICAL
 
+        val prefs = getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE)
+        if (prefs.contains("pen_color")) {
+            drawingView.setPenColor(prefs.getInt("pen_color", drawingView.getPenColor()))
+        }
+        if (prefs.contains("canvas_color")) {
+            drawingView.setCanvasColor(prefs.getInt("canvas_color", drawingView.getCanvasColor()))
+        }
+
         updateSwatchColor(btnPenColor, drawingView.getPenColor())
         updateSwatchColor(btnBgColor, drawingView.getCanvasColor())
         updateHistoryButtons()
@@ -97,11 +105,13 @@ class DrawingKeyboardService : InputMethodService() {
         stripPenColor.onColorSelected = { color ->
             drawingView.setPenColor(color)
             updateSwatchColor(btnPenColor, color)
+            prefs.edit().putInt("pen_color", color).apply()
         }
 
         stripBgColor.onColorSelected = { color ->
             drawingView.setCanvasColor(color)
             updateSwatchColor(btnBgColor, color)
+            prefs.edit().putInt("canvas_color", color).apply()
         }
 
         btnUndo.setOnClickListener { drawingView.undo() }
@@ -151,16 +161,19 @@ class DrawingKeyboardService : InputMethodService() {
         val strokes = drawingView.getStrokes()
         if (strokes.isEmpty()) return
 
-        val file = StickerRenderer.renderToPngFile(strokes, cacheDir) ?: return
+        val mimeType = StickerCommitter.preferredMimeType(currentInputEditorInfo)
+        val renderMime = mimeType ?: StickerCommitter.MIME_WEBP
+        val file = StickerRenderer.renderToFile(strokes, cacheDir, renderMime) ?: return
         val authority = "${BuildConfig.APPLICATION_ID}.fileprovider"
         val contentUri = runCatching {
             FileProvider.getUriForFile(applicationContext, authority, file)
         }.getOrNull()
 
-        val committed = contentUri != null && StickerCommitter.commitSticker(
+        val committed = contentUri != null && mimeType != null && StickerCommitter.commitSticker(
             currentInputConnection,
             currentInputEditorInfo,
-            contentUri
+            contentUri,
+            mimeType
         )
 
         if (committed) {

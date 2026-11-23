@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Build
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.ceil
@@ -80,7 +81,11 @@ object StickerRenderer {
         return bitmap
     }
 
-    fun renderToPngFile(strokes: List<Stroke>, cacheDir: File): File? {
+    fun renderToPngFile(strokes: List<Stroke>, cacheDir: File): File? =
+        renderToFile(strokes, cacheDir, "image/png")
+
+    @Suppress("DEPRECATION")
+    fun renderToFile(strokes: List<Stroke>, cacheDir: File, mimeType: String): File? {
         val bitmap = renderBitmap(strokes) ?: return null
         val stickerDir = File(cacheDir, "stickers").apply { mkdirs() }
         stickerDir.listFiles()?.forEach { old ->
@@ -89,9 +94,21 @@ object StickerRenderer {
             }
         }
 
-        val outFile = File(stickerDir, "sticker_${System.currentTimeMillis()}.png")
+        val isWebp = mimeType.equals("image/webp", ignoreCase = true)
+        val ext = if (isWebp) "webp" else "png"
+        val format = if (isWebp) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Bitmap.CompressFormat.WEBP_LOSSLESS
+            } else {
+                Bitmap.CompressFormat.WEBP
+            }
+        } else {
+            Bitmap.CompressFormat.PNG
+        }
+
+        val outFile = File(stickerDir, "sticker_${System.currentTimeMillis()}.$ext")
         FileOutputStream(outFile).use { fos ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            bitmap.compress(format, 100, fos)
         }
         bitmap.recycle()
         return outFile

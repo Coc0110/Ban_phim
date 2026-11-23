@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.inputmethodservice.InputMethodService
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -16,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.banphim.BuildConfig
 import com.banphim.R
+import com.banphim.drawing.BrushSizeSliderView
 import com.banphim.drawing.ColorStripView
 import com.banphim.drawing.DrawingView
 import com.banphim.drawing.StickerRenderer
@@ -26,6 +26,8 @@ class DrawingKeyboardService : InputMethodService() {
     private lateinit var btnUndo: ImageButton
     private lateinit var btnRedo: ImageButton
     private lateinit var btnClear: ImageButton
+    private lateinit var btnBrushSize: ImageButton
+    private lateinit var sliderBrushSize: BrushSizeSliderView
     private lateinit var btnPenColor: View
     private lateinit var btnBgColor: View
     private lateinit var stripPenColor: ColorStripView
@@ -37,12 +39,12 @@ class DrawingKeyboardService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         val root = layoutInflater.inflate(R.layout.keyboard_drawing, null)
-        val controlsOverlay = root.findViewById<View>(R.id.controlsOverlay)
-        val basePadding = (10 * resources.displayMetrics.density).toInt()
+        val padH = (10 * resources.displayMetrics.density).toInt()
+        val padV = (8 * resources.displayMetrics.density).toInt()
 
-        ViewCompat.setOnApplyWindowInsetsListener(controlsOverlay) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            v.setPadding(basePadding, basePadding, basePadding, basePadding + navBottom)
+            v.setPadding(padH, padV, padH, padV + navBottom)
             insets
         }
 
@@ -50,6 +52,8 @@ class DrawingKeyboardService : InputMethodService() {
         btnUndo = root.findViewById(R.id.btnUndo)
         btnRedo = root.findViewById(R.id.btnRedo)
         btnClear = root.findViewById(R.id.btnClear)
+        btnBrushSize = root.findViewById(R.id.btnBrushSize)
+        sliderBrushSize = root.findViewById(R.id.sliderBrushSize)
         btnPenColor = root.findViewById(R.id.btnPenColor)
         btnBgColor = root.findViewById(R.id.btnBgColor)
         stripPenColor = root.findViewById(R.id.stripPenColor)
@@ -65,29 +69,48 @@ class DrawingKeyboardService : InputMethodService() {
         if (prefs.contains("canvas_color")) {
             drawingView.setCanvasColor(prefs.getInt("canvas_color", drawingView.getCanvasColor()))
         }
+        if (prefs.contains("brush_size_px")) {
+            drawingView.setStrokeWidth(prefs.getFloat("brush_size_px", drawingView.getStrokeWidth()))
+        }
+        sliderBrushSize.setStrokeWidthPx(drawingView.getStrokeWidth())
 
         updateSwatchColor(btnPenColor, drawingView.getPenColor())
         updateSwatchColor(btnBgColor, drawingView.getCanvasColor())
         updateHistoryButtons()
 
         drawingView.onHistoryChanged = { updateHistoryButtons() }
-        drawingView.onDrawStart = {
+        drawingView.onDrawStart = { closeAllPopups() }
+
+        btnBrushSize.setOnClickListener {
             stripPenColor.hide()
             stripBgColor.hide()
+            if (sliderBrushSize.visibility == View.VISIBLE) {
+                sliderBrushSize.hide()
+            } else {
+                sliderBrushSize.setStrokeWidthPx(drawingView.getStrokeWidth())
+                sliderBrushSize.show()
+            }
         }
 
-        root.findViewById<ImageButton>(R.id.btnBackKeyboard).setOnClickListener {
-            switchBackToPreviousKeyboard()
+        sliderBrushSize.onSizeChanged = { widthPx ->
+            drawingView.setStrokeWidth(widthPx)
+            prefs.edit().putFloat("brush_size_px", widthPx).apply()
+        }
+
+        sliderBrushSize.onDragStateChanged = { dragging ->
+            drawingView.setBrushPreviewVisible(dragging)
         }
 
         btnPenColor.setOnClickListener {
+            sliderBrushSize.hide()
             stripBgColor.hide()
-            btnPenColor.visibility = View.INVISIBLE
+            btnPenColor.visibility = View.GONE
             stripPenColor.setSelectedColor(drawingView.getPenColor())
             stripPenColor.show()
         }
 
         btnBgColor.setOnClickListener {
+            sliderBrushSize.hide()
             stripPenColor.hide()
             btnBgColor.visibility = View.INVISIBLE
             stripBgColor.setSelectedColor(drawingView.getCanvasColor())
@@ -114,15 +137,32 @@ class DrawingKeyboardService : InputMethodService() {
             prefs.edit().putInt("canvas_color", color).apply()
         }
 
-        btnUndo.setOnClickListener { drawingView.undo() }
-        btnRedo.setOnClickListener { drawingView.redo() }
-        btnClear.setOnClickListener { drawingView.clear() }
+        btnUndo.setOnClickListener {
+            closeAllPopups()
+            drawingView.undo()
+        }
+        btnRedo.setOnClickListener {
+            closeAllPopups()
+            drawingView.redo()
+        }
+        btnClear.setOnClickListener {
+            closeAllPopups()
+            drawingView.clear()
+        }
 
-        root.findViewById<ImageButton>(R.id.btnSend).setOnClickListener {
+        root.findViewById<View>(R.id.btnSend).setOnClickListener {
+            closeAllPopups()
             sendSticker()
         }
 
         return root
+    }
+
+    private fun closeAllPopups() {
+        sliderBrushSize.hide()
+        stripPenColor.hide()
+        stripBgColor.hide()
+        drawingView.setBrushPreviewVisible(false)
     }
 
     private fun updateSwatchColor(swatch: View, color: Int) {
@@ -143,18 +183,6 @@ class DrawingKeyboardService : InputMethodService() {
         btnRedo.isEnabled = hasRedo
         btnRedo.alpha = if (hasRedo) 1.0f else 0.35f
         btnClear.visibility = if (hasStrokes) View.VISIBLE else View.GONE
-    }
-
-    private fun switchBackToPreviousKeyboard() {
-        val switched = try {
-            switchToPreviousInputMethod()
-        } catch (_: Exception) {
-            false
-        }
-        if (!switched) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            imm?.showInputMethodPicker()
-        }
     }
 
     private fun sendSticker() {

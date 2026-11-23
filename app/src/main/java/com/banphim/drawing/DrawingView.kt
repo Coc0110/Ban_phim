@@ -119,7 +119,7 @@ class DrawingView @JvmOverloads constructor(
                 invalidate()
                 return true
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            MotionEvent.ACTION_UP -> {
                 val path = activePath ?: return false
                 path.lineTo(x, y)
                 val bounds = RectF()
@@ -128,6 +128,11 @@ class DrawingView @JvmOverloads constructor(
                 activePath = null
                 invalidate()
                 onHistoryChanged?.invoke()
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                activePath = null
+                invalidate()
                 return true
             }
         }

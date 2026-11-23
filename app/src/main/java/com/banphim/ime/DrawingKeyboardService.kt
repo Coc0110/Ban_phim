@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.inputmethodservice.InputMethodService
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -88,7 +90,13 @@ class DrawingKeyboardService : InputMethodService() {
     }
 
     private fun updateSwatchColor(swatch: View, color: Int) {
-        swatch.backgroundTintList = ColorStateList.valueOf(color)
+        val layer = swatch.background?.mutate() as? LayerDrawable
+        val fill = layer?.findDrawableByLayerId(R.id.swatch_fill) as? GradientDrawable
+        if (fill != null) {
+            fill.setColor(color)
+        } else {
+            swatch.backgroundTintList = ColorStateList.valueOf(color)
+        }
     }
 
     private fun updateHistoryButtons() {
@@ -120,9 +128,11 @@ class DrawingKeyboardService : InputMethodService() {
 
         val file = StickerRenderer.renderToPngFile(strokes, cacheDir) ?: return
         val authority = "${BuildConfig.APPLICATION_ID}.fileprovider"
-        val contentUri = FileProvider.getUriForFile(this, authority, file)
+        val contentUri = runCatching {
+            FileProvider.getUriForFile(applicationContext, authority, file)
+        }.getOrNull()
 
-        val committed = StickerCommitter.commitSticker(
+        val committed = contentUri != null && StickerCommitter.commitSticker(
             currentInputConnection,
             currentInputEditorInfo,
             contentUri
@@ -131,8 +141,10 @@ class DrawingKeyboardService : InputMethodService() {
         if (committed) {
             drawingView.clear()
         } else {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-            clipboard?.setPrimaryClip(ClipData.newUri(contentResolver, "Sticker", contentUri))
+            if (contentUri != null) {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                clipboard?.setPrimaryClip(ClipData.newUri(contentResolver, "Sticker", contentUri))
+            }
             Toast.makeText(this, R.string.toast_unsupported_field, Toast.LENGTH_SHORT).show()
         }
     }

@@ -56,4 +56,23 @@ class StickerRendererTest {
         assertTrue(file!!.exists() && file.length() > 0L)
         dir.deleteRecursively()
     }
+
+    @Test
+    fun `combining horizontal line and dot strokes includes both in bitmap bounds`() {
+        val hLine = Stroke(
+            path = Path().apply { moveTo(10f, 50f); lineTo(100f, 50f) },
+            color = Color.BLACK,
+            strokeWidth = 10f,
+            bounds = RectF(10f, 50f, 100f, 50f)
+        )
+        val dot = Stroke(
+            path = Path().apply { moveTo(250f, 200f); lineTo(250f, 200f) },
+            color = Color.BLACK,
+            strokeWidth = 10f,
+            bounds = RectF(250f, 200f, 250f, 200f)
+        )
+        val bmp = StickerRenderer.renderBitmap(listOf(hLine, dot))!!
+        assertTrue("Expected width > 240 to cover both strokes, was ${bmp.width}", bmp.width > 240)
+        assertTrue("Expected height > 150 to cover both strokes, was ${bmp.height}", bmp.height > 150)
+    }
 }

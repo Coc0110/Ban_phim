@@ -20,14 +20,21 @@ object StickerRenderer {
     ): Bitmap? {
         if (strokes.isEmpty()) return null
 
-        val unionBounds = RectF(strokes.first().bounds)
-        var maxStrokeWidth = strokes.first().strokeWidth
-        for (i in 1 until strokes.size) {
-            unionBounds.union(strokes[i].bounds)
-            if (strokes[i].strokeWidth > maxStrokeWidth) {
-                maxStrokeWidth = strokes[i].strokeWidth
+        var minLeft = Float.POSITIVE_INFINITY
+        var minTop = Float.POSITIVE_INFINITY
+        var maxRight = Float.NEGATIVE_INFINITY
+        var maxBottom = Float.NEGATIVE_INFINITY
+        var maxStrokeWidth = 0f
+        for (stroke in strokes) {
+            minLeft = minOf(minLeft, stroke.bounds.left)
+            minTop = minOf(minTop, stroke.bounds.top)
+            maxRight = maxOf(maxRight, stroke.bounds.right)
+            maxBottom = maxOf(maxBottom, stroke.bounds.bottom)
+            if (stroke.strokeWidth > maxStrokeWidth) {
+                maxStrokeWidth = stroke.strokeWidth
             }
         }
+        val unionBounds = RectF(minLeft, minTop, maxRight, maxBottom)
 
         val expand = maxStrokeWidth / 2f + outlineWidthPx + paddingPx
         unionBounds.inset(-expand, -expand)

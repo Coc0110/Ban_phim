@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="app_bg">#F6F8FC</color>
+    <color name="text_primary">#141B29</color>
+    <color name="text_secondary">#5A657A</color>
+    <color name="status_done_text">#1B5E20</color>
+    <color name="status_pending_text">#E65100</color>
     <color name="default_canvas_bg">#FFFFFF</color>
     <color name="default_pen_color">#111111</color>
     <color name="control_bg">#E6FFFFFF</color>

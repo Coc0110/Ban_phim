@@ -128,9 +128,9 @@
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:background="@drawable/circle_swatch_bg"
-            android:backgroundTint="@color/send_bg"
+            android:background="@drawable/send_button_bg"
             android:contentDescription="@string/btn_send"
+            android:elevation="3dp"
             android:padding="10dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_send" />

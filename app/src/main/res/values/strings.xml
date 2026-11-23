@@ -9,10 +9,30 @@
     <string name="btn_redo">Lùi hoàn tác</string>
     <string name="btn_clear">Xóa hết</string>
     <string name="btn_send">Gửi nhãn dán</string>
+
     <string name="setup_title">Bàn phím Vẽ Sticker</string>
-    <string name="setup_subtitle">Bật bàn phím để vẽ chữ và gửi nhãn dán nền trong suốt trực tiếp trong các ứng dụng chat.</string>
-    <string name="setup_step_1">1. Bật "Bảng vẽ Sticker" trong Cài đặt</string>
-    <string name="setup_step_2">2. Chọn bàn phím để dùng thử</string>
+    <string name="setup_subtitle">Vẽ chữ tay &amp; gửi nhãn dán tách nền ngay trong khung chat</string>
+
+    <string name="step_1_title">Bước 1: Kích hoạt bàn phím</string>
+    <string name="step_1_desc">Cho phép "Bảng vẽ Sticker" hoạt động trong phần Cài đặt bàn phím của máy.</string>
+    <string name="setup_step_1">Mở Cài đặt bàn phím</string>
+
+    <string name="step_2_title">Bước 2: Chọn làm bàn phím thử</string>
+    <string name="step_2_desc">Chuyển nhanh sang Bảng vẽ Sticker để vẽ thử ngay bên dưới.</string>
+    <string name="setup_step_2">Chọn bàn phím</string>
+
+    <string name="status_enabled">Đã bật</string>
+    <string name="status_not_enabled">Chưa bật</string>
+    <string name="status_selected">Đang dùng</string>
+    <string name="status_not_selected">Chưa chọn</string>
+
+    <string name="guide_title">Mẹo sử dụng nhanh</string>
+    <string name="guide_tip_1">• Chạm nút bàn phím nhỏ của Android ở góc dưới màn hình để chuyển nhanh qua lại giữa bàn phím chữ và bảng vẽ.</string>
+    <string name="guide_tip_2">• Chạm nút màu bút / màu nền để mở thanh trượt: kéo dọc theo thanh để đổi màu, kéo chệch ra ngoài thanh để chỉnh độ đậm nhạt.</string>
+    <string name="guide_tip_3">• Nét vẽ khi gửi sẽ tự động tách nền và bọc viền trắng để nổi rõ trên mọi giao diện chat.</string>
+
+    <string name="test_section_title">Khu vực vẽ thử</string>
     <string name="test_input_hint">Chạm vào đây rồi đổi sang Bảng vẽ Sticker để thử…</string>
+    <string name="ad_placeholder_label">Vùng gắn quảng cáo (AdMob Banner)</string>
     <string name="toast_unsupported_field">Ứng dụng này không hỗ trợ nhận nhãn dán trực tiếp. Đã sao chép vào bộ nhớ tạm.</string>
 </resources>

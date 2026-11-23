@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="300dp">
+
+    <com.banphim.drawing.DrawingView
+        android:id="@+id/drawingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top-left: Back to regular keyboard -->
+    <ImageButton
+        android:id="@+id/btnBackKeyboard"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="10dp"
+        android:background="@drawable/circle_swatch_bg"
+        android:contentDescription="@string/btn_back_keyboard"
+        android:padding="8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_back_keyboard" />
+
+    <!-- Top-right: Pen color button (left) + Background color button (right) -->
+    <LinearLayout
+        android:id="@+id/topRightControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.banphim.drawing.ColorStripView
+            android:id="@+id/stripPenColor"
+            android:layout_width="190dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/btnPenColor"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_swatch_bg"
+            android:contentDescription="@string/btn_pen_color" />
+
+        <View
+            android:id="@+id/btnBgColor"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/circle_swatch_bg"
+            android:contentDescription="@string/btn_bg_color" />
+    </LinearLayout>
+
+    <!-- Vertical color strip dropping down from top-right background button -->
+    <com.banphim.drawing.ColorStripView
+        android:id="@+id/stripBgColor"
+        android:layout_width="32dp"
+        android:layout_height="180dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone" />
+
+    <!-- Bottom-left: Undo / Redo / Clear -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnUndo"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circle_swatch_bg"
+            android:contentDescription="@string/btn_undo"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_undo" />
+
+        <ImageButton
+            android:id="@+id/btnRedo"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circle_swatch_bg"
+            android:contentDescription="@string/btn_redo"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_redo" />
+
+        <ImageButton
+            android:id="@+id/btnClear"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/circle_swatch_bg"
+            android:contentDescription="@string/btn_clear"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_clear" />
+    </LinearLayout>
+
+    <!-- Bottom-right: Send sticker -->
+    <ImageButton
+        android:id="@+id/btnSend"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
+        android:background="@drawable/circle_swatch_bg"
+        android:backgroundTint="@color/send_bg"
+        android:contentDescription="@string/btn_send"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_send" />
+
+</FrameLayout>

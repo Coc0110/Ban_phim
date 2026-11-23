@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.banphim.BuildConfig
 import com.banphim.R
 import com.banphim.drawing.ColorStripView
@@ -35,6 +37,14 @@ class DrawingKeyboardService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         val root = layoutInflater.inflate(R.layout.keyboard_drawing, null)
+        val controlsOverlay = root.findViewById<View>(R.id.controlsOverlay)
+        val basePadding = (10 * resources.displayMetrics.density).toInt()
+
+        ViewCompat.setOnApplyWindowInsetsListener(controlsOverlay) { v, insets ->
+            val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            v.setPadding(basePadding, basePadding, basePadding, basePadding + navBottom)
+            insets
+        }
 
         drawingView = root.findViewById(R.id.drawingView)
         btnUndo = root.findViewById(R.id.btnUndo)
@@ -64,12 +74,24 @@ class DrawingKeyboardService : InputMethodService() {
 
         btnPenColor.setOnClickListener {
             stripBgColor.hide()
-            if (stripPenColor.visibility == View.VISIBLE) stripPenColor.hide() else stripPenColor.show()
+            btnPenColor.visibility = View.INVISIBLE
+            stripPenColor.setSelectedColor(drawingView.getPenColor())
+            stripPenColor.show()
         }
 
         btnBgColor.setOnClickListener {
             stripPenColor.hide()
-            if (stripBgColor.visibility == View.VISIBLE) stripBgColor.hide() else stripBgColor.show()
+            btnBgColor.visibility = View.INVISIBLE
+            stripBgColor.setSelectedColor(drawingView.getCanvasColor())
+            stripBgColor.show()
+        }
+
+        stripPenColor.onDismissed = {
+            btnPenColor.visibility = View.VISIBLE
+        }
+
+        stripBgColor.onDismissed = {
+            btnBgColor.visibility = View.VISIBLE
         }
 
         stripPenColor.onColorSelected = { color ->
@@ -108,10 +130,9 @@ class DrawingKeyboardService : InputMethodService() {
         val hasRedo = drawingView.canRedo()
         btnUndo.isEnabled = hasStrokes
         btnUndo.alpha = if (hasStrokes) 1.0f else 0.35f
-        btnClear.isEnabled = hasStrokes
-        btnClear.alpha = if (hasStrokes) 1.0f else 0.35f
         btnRedo.isEnabled = hasRedo
         btnRedo.alpha = if (hasRedo) 1.0f else 0.35f
+        btnClear.visibility = if (hasStrokes) View.VISIBLE else View.GONE
     }
 
     private fun switchBackToPreviousKeyboard() {

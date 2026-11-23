@@ -3,12 +3,15 @@ package com.banphim.drawing
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.abs
 
 class ColorStripView @JvmOverloads constructor(
     context: Context,
@@ -24,90 +27,147 @@ class ColorStripView @JvmOverloads constructor(
     var orientation: Orientation = Orientation.VERTICAL
         set(value) {
             field = value
+            shaderDirty = true
             invalidate()
         }
 
-    var colors: List<Int> = listOf(
-        Color.parseColor("#FFFFFF"),
-        Color.parseColor("#E0E0E0"),
-        Color.parseColor("#424242"),
-        Color.parseColor("#111111"),
-        Color.parseColor("#E53935"),
-        Color.parseColor("#FB8C00"),
-        Color.parseColor("#FDD835"),
-        Color.parseColor("#43A047"),
-        Color.parseColor("#1E88E5"),
-        Color.parseColor("#8E24AA")
+    private val stops = intArrayOf(
+        Color.WHITE,
+        Color.parseColor("#FF1744"),
+        Color.parseColor("#FF9100"),
+        Color.parseColor("#FFEA00"),
+        Color.parseColor("#00E676"),
+        Color.parseColor("#00E5FF"),
+        Color.parseColor("#2979FF"),
+        Color.parseColor("#651FFF"),
+        Color.parseColor("#F50057"),
+        Color.BLACK
     )
-        set(value) {
-            field = value
-            invalidate()
-        }
+
+    var thumbProgress: Float = 0.5f
+        private set
+
+    var selectedColor: Int = Color.BLACK
+        private set
 
     var onColorSelected: ((Int) -> Unit)? = null
+    var onDismissed: (() -> Unit)? = null
 
-    private val segmentPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         color = Color.parseColor("#66000000")
+        strokeWidth = 1.5f * resources.displayMetrics.density
+    }
+    private val thumbFillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val thumbOuterRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.parseColor("#AA000000")
         strokeWidth = 2f * resources.displayMetrics.density
     }
+    private val thumbInnerRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.WHITE
+        strokeWidth = 2f * resources.displayMetrics.density
+    }
+
     private val clipPath = Path()
-    private val boundsRect = RectF()
+    private val barRect = RectF()
+    private var shaderDirty = true
+    private val deadzonePx = 16f * resources.displayMetrics.density
+    private val maxShadeDragPx = 120f * resources.displayMetrics.density
 
     fun show() {
         visibility = VISIBLE
     }
 
     fun hide() {
-        visibility = GONE
+        if (visibility != GONE) {
+            visibility = GONE
+            onDismissed?.invoke()
+        }
+    }
+
+    fun setSelectedColor(color: Int) {
+        selectedColor = color
+        thumbProgress = findNearestProgress(color)
+        invalidate()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        shaderDirty = true
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (colors.isEmpty()) return
-
         val w = width.toFloat()
         val h = height.toFloat()
-        val radius = minOf(w, h) / 2f
+        if (w <= 0f || h <= 0f) return
 
-        boundsRect.set(0f, 0f, w, h)
-        clipPath.reset()
-        clipPath.addRoundRect(boundsRect, radius, radius, Path.Direction.CW)
+        val pad = minOf(w, h) * 0.15f
+        val barLeft: Float
+        val barTop: Float
+        val barRight: Float
+        val barBottom: Float
 
-        canvas.save()
-        canvas.clipPath(clipPath)
-
-        val count = colors.size
         if (orientation == Orientation.VERTICAL) {
-            val step = h / count
-            for (i in 0 until count) {
-                segmentPaint.color = colors[i]
-                canvas.drawRect(0f, i * step, w, (i + 1) * step, segmentPaint)
-            }
+            barLeft = pad
+            barRight = w - pad
+            barTop = pad
+            barBottom = h - pad
         } else {
-            val step = w / count
-            for (i in 0 until count) {
-                segmentPaint.color = colors[i]
-                canvas.drawRect(i * step, 0f, (i + 1) * step, h, segmentPaint)
-            }
+            barLeft = pad
+            barRight = w - pad
+            barTop = pad
+            barBottom = h - pad
         }
 
-        canvas.restore()
-        val inset = borderPaint.strokeWidth / 2f
-        boundsRect.inset(inset, inset)
-        canvas.drawRoundRect(boundsRect, radius, radius, borderPaint)
+        if (shaderDirty) {
+            barPaint.shader = if (orientation == Orientation.VERTICAL) {
+                LinearGradient(0f, barTop, 0f, barBottom, stops, null, Shader.TileMode.CLAMP)
+            } else {
+                LinearGradient(barLeft, 0f, barRight, 0f, stops, null, Shader.TileMode.CLAMP)
+            }
+            shaderDirty = false
+        }
+
+        barRect.set(barLeft, barTop, barRight, barBottom)
+        val cornerRadius = minOf(barRect.width(), barRect.height()) / 2f
+        clipPath.reset()
+        clipPath.addRoundRect(barRect, cornerRadius, cornerRadius, Path.Direction.CW)
+        canvas.drawPath(clipPath, barPaint)
+        canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, borderPaint)
+
+        val thumbRadius = minOf(w, h) * 0.42f
+        val cx: Float
+        val cy: Float
+        if (orientation == Orientation.VERTICAL) {
+            cx = w / 2f
+            val travelTop = barTop + thumbRadius * 0.5f
+            val travelBottom = barBottom - thumbRadius * 0.5f
+            cy = travelTop + thumbProgress * (travelBottom - travelTop)
+        } else {
+            cy = h / 2f
+            val travelLeft = barLeft + thumbRadius * 0.5f
+            val travelRight = barRight - thumbRadius * 0.5f
+            cx = travelLeft + thumbProgress * (travelRight - travelLeft)
+        }
+
+        thumbFillPaint.color = selectedColor
+        canvas.drawCircle(cx, cy, thumbRadius, thumbFillPaint)
+        canvas.drawCircle(cx, cy, thumbRadius - thumbInnerRingPaint.strokeWidth * 0.5f, thumbInnerRingPaint)
+        canvas.drawCircle(cx, cy, thumbRadius, thumbOuterRingPaint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (colors.isEmpty()) return false
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                pickColorAt(event.x, event.y)
+                updateFromTouch(event.x, event.y)
                 return true
             }
             MotionEvent.ACTION_UP -> {
-                pickColorAt(event.x, event.y)
+                updateFromTouch(event.x, event.y)
                 hide()
                 return true
             }
@@ -119,13 +179,69 @@ class ColorStripView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
-    private fun pickColorAt(x: Float, y: Float) {
-        val ratio = if (orientation == Orientation.VERTICAL) {
-            if (height <= 0) 0f else y / height.toFloat()
+    private fun updateFromTouch(x: Float, y: Float) {
+        val w = width.toFloat()
+        val h = height.toFloat()
+        if (w <= 0f || h <= 0f) return
+
+        val progress: Float
+        val perpDelta: Float
+        if (orientation == Orientation.VERTICAL) {
+            progress = (y / h).coerceIn(0f, 1f)
+            perpDelta = (w / 2f) - x
         } else {
-            if (width <= 0) 0f else x / width.toFloat()
+            progress = (x / w).coerceIn(0f, 1f)
+            perpDelta = y - (h / 2f)
         }
-        val index = (ratio * colors.size).toInt().coerceIn(0, colors.size - 1)
-        onColorSelected?.invoke(colors[index])
+
+        thumbProgress = progress
+        var color = interpolateStops(progress)
+
+        if (abs(perpDelta) > deadzonePx) {
+            val factor = ((abs(perpDelta) - deadzonePx) / maxShadeDragPx).coerceIn(0f, 1f)
+            color = if (perpDelta > 0f) {
+                blendColors(color, Color.BLACK, factor * 0.85f)
+            } else {
+                blendColors(color, Color.WHITE, factor * 0.85f)
+            }
+        }
+
+        selectedColor = color
+        invalidate()
+        onColorSelected?.invoke(color)
+    }
+
+    private fun interpolateStops(t: Float): Int {
+        val scaled = t.coerceIn(0f, 1f) * (stops.size - 1)
+        val idx = scaled.toInt().coerceIn(0, stops.size - 2)
+        val frac = scaled - idx
+        return blendColors(stops[idx], stops[idx + 1], frac)
+    }
+
+    private fun blendColors(c1: Int, c2: Int, ratio: Float): Int {
+        val inv = 1f - ratio
+        val r = (Color.red(c1) * inv + Color.red(c2) * ratio).toInt().coerceIn(0, 255)
+        val g = (Color.green(c1) * inv + Color.green(c2) * ratio).toInt().coerceIn(0, 255)
+        val b = (Color.blue(c1) * inv + Color.blue(c2) * ratio).toInt().coerceIn(0, 255)
+        return Color.rgb(r, g, b)
+    }
+
+    private fun findNearestProgress(color: Int): Float {
+        var bestT = 0.5f
+        var bestDist = Int.MAX_VALUE
+        val samples = 60
+        for (i in 0..samples) {
+            val t = i.toFloat() / samples
+            val c = interpolateStops(t)
+            val dr = Color.red(color) - Color.red(c)
+            val dg = Color.green(color) - Color.green(c)
+            val db = Color.blue(color) - Color.blue(c)
+            val dist = dr * dr + dg * dg + db * db
+            if (dist < bestDist) {
+                bestDist = dist
+                bestT = t
+            }
+        }
+        return bestT
     }
 }

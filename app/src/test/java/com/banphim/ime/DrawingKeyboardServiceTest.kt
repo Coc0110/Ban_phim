@@ -53,4 +53,21 @@ class DrawingKeyboardServiceTest {
         val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
         assertTrue(service.onEvaluateInputViewShown())
     }
+
+    @Test
+    fun `clear button is only visible when strokes exist`() {
+        val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        val root = service.onCreateInputView()
+        val btnClear = root.findViewById<ImageButton>(R.id.btnClear)
+        val drawingView = root.findViewById<DrawingView>(R.id.drawingView)
+
+        assertEquals(View.GONE, btnClear.visibility)
+
+        drawingView.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 10f, 0))
+        drawingView.dispatchTouchEvent(MotionEvent.obtain(0, 10, MotionEvent.ACTION_UP, 30f, 30f, 0))
+        assertEquals(View.VISIBLE, btnClear.visibility)
+
+        btnClear.performClick()
+        assertEquals(View.GONE, btnClear.visibility)
+    }
 }

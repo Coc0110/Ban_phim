@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="keyboard_height">310dp</dimen>
+    <dimen name="pen_strip_width">210dp</dimen>
+</resources>

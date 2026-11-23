@@ -48,6 +48,15 @@ class StickerCommitterTest {
     }
 
     @Test
+    fun `preferredMimeType chooses gif for Messenger to preserve transparency`() {
+        val messengerInfo = EditorInfo().apply {
+            packageName = "com.facebook.orca"
+            EditorInfoCompat.setContentMimeTypes(this, arrayOf("image/png", "image/webp", "image/gif"))
+        }
+        assertEquals("image/gif", StickerCommitter.preferredMimeType(messengerInfo))
+    }
+
+    @Test
     fun `commitSticker returns false when inputConnection is null or unsupported`() {
         val uri = Uri.parse("content://com.banphim.fileprovider/stickers/test.png")
         assertFalse(StickerCommitter.commitSticker(null, EditorInfo(), uri, "image/png"))

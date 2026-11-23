@@ -94,21 +94,30 @@ object StickerRenderer {
             }
         }
 
+        val isGif = mimeType.equals("image/gif", ignoreCase = true)
         val isWebp = mimeType.equals("image/webp", ignoreCase = true)
-        val ext = if (isWebp) "webp" else "png"
-        val format = if (isWebp) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                Bitmap.CompressFormat.WEBP_LOSSLESS
-            } else {
-                Bitmap.CompressFormat.WEBP
-            }
-        } else {
-            Bitmap.CompressFormat.PNG
+        val ext = when {
+            isGif -> "gif"
+            isWebp -> "webp"
+            else -> "png"
         }
 
         val outFile = File(stickerDir, "sticker_${System.currentTimeMillis()}.$ext")
         FileOutputStream(outFile).use { fos ->
-            bitmap.compress(format, 100, fos)
+            if (isGif) {
+                GifEncoder.encode(bitmap, fos)
+            } else {
+                val format = if (isWebp) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Bitmap.CompressFormat.WEBP_LOSSLESS
+                    } else {
+                        Bitmap.CompressFormat.WEBP
+                    }
+                } else {
+                    Bitmap.CompressFormat.PNG
+                }
+                bitmap.compress(format, 100, fos)
+            }
         }
         bitmap.recycle()
         return outFile

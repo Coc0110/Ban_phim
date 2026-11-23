@@ -10,10 +10,17 @@ import androidx.core.view.inputmethod.InputContentInfoCompat
 
 object StickerCommitter {
 
+    const val MIME_GIF = "image/gif"
     const val MIME_WEBP = "image/webp"
     const val MIME_PNG = "image/png"
     private const val MIME_IMAGE_ANY = "image/*"
     private const val MIME_ANY = "*/*"
+
+    private val gifPreferredPackages = setOf(
+        "com.facebook.orca",
+        "com.facebook.mlite",
+        "com.instagram.android"
+    )
 
     fun preferredMimeType(editorInfo: EditorInfo?): String? {
         if (editorInfo == null) return null
@@ -21,10 +28,16 @@ object StickerCommitter {
         val acceptsWildcard = mimeTypes.any {
             it.equals(MIME_IMAGE_ANY, ignoreCase = true) || it.equals(MIME_ANY, ignoreCase = true)
         }
+        val acceptsGif = acceptsWildcard || mimeTypes.any { it.equals(MIME_GIF, ignoreCase = true) }
         val acceptsWebp = acceptsWildcard || mimeTypes.any { it.equals(MIME_WEBP, ignoreCase = true) }
+        val acceptsPng = acceptsWildcard || mimeTypes.any { it.equals(MIME_PNG, ignoreCase = true) }
+
+        if (editorInfo.packageName in gifPreferredPackages && acceptsGif) {
+            return MIME_GIF
+        }
         if (acceptsWebp) return MIME_WEBP
-        val acceptsPng = mimeTypes.any { it.equals(MIME_PNG, ignoreCase = true) }
         if (acceptsPng) return MIME_PNG
+        if (acceptsGif) return MIME_GIF
         return null
     }
 

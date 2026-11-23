@@ -91,4 +91,20 @@ class StickerRendererTest {
         assertTrue(file.exists() && file.length() > 0L)
         dir.deleteRecursively()
     }
+
+    @Test
+    fun `renderToFile writes gif file when mimeType is image gif`() {
+        val stroke = Stroke(
+            path = Path().apply { moveTo(0f, 0f); lineTo(50f, 50f) },
+            color = Color.RED,
+            strokeWidth = 10f,
+            bounds = RectF(0f, 0f, 50f, 50f)
+        )
+        val dir = createTempDirectory("stickers_gif").toFile()
+        val file = StickerRenderer.renderToFile(listOf(stroke), dir, "image/gif")
+        assertNotNull(file)
+        assertTrue(file!!.name.endsWith(".gif"))
+        assertTrue(file.exists() && file.length() > 0L)
+        dir.deleteRecursively()
+    }
 }

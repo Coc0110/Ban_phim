@@ -48,12 +48,12 @@ class StickerCommitterTest {
     }
 
     @Test
-    fun `preferredMimeType chooses gif for Messenger to preserve transparency`() {
+    fun `preferredMimeType chooses webp for Messenger when supported`() {
         val messengerInfo = EditorInfo().apply {
             packageName = "com.facebook.orca"
             EditorInfoCompat.setContentMimeTypes(this, arrayOf("image/png", "image/webp", "image/gif"))
         }
-        assertEquals("image/gif", StickerCommitter.preferredMimeType(messengerInfo))
+        assertEquals("image/webp", StickerCommitter.preferredMimeType(messengerInfo))
     }
 
     @Test

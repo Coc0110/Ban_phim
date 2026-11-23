@@ -16,25 +16,16 @@ object StickerCommitter {
     private const val MIME_IMAGE_ANY = "image/*"
     private const val MIME_ANY = "*/*"
 
-    private val gifPreferredPackages = setOf(
-        "com.facebook.orca",
-        "com.facebook.mlite",
-        "com.instagram.android"
-    )
-
     fun preferredMimeType(editorInfo: EditorInfo?): String? {
         if (editorInfo == null) return null
         val mimeTypes = EditorInfoCompat.getContentMimeTypes(editorInfo)
         val acceptsWildcard = mimeTypes.any {
             it.equals(MIME_IMAGE_ANY, ignoreCase = true) || it.equals(MIME_ANY, ignoreCase = true)
         }
-        val acceptsGif = acceptsWildcard || mimeTypes.any { it.equals(MIME_GIF, ignoreCase = true) }
         val acceptsWebp = acceptsWildcard || mimeTypes.any { it.equals(MIME_WEBP, ignoreCase = true) }
         val acceptsPng = acceptsWildcard || mimeTypes.any { it.equals(MIME_PNG, ignoreCase = true) }
+        val acceptsGif = acceptsWildcard || mimeTypes.any { it.equals(MIME_GIF, ignoreCase = true) }
 
-        if (editorInfo.packageName in gifPreferredPackages && acceptsGif) {
-            return MIME_GIF
-        }
         if (acceptsWebp) return MIME_WEBP
         if (acceptsPng) return MIME_PNG
         if (acceptsGif) return MIME_GIF

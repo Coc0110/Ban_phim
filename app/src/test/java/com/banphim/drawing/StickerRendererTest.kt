@@ -123,4 +123,18 @@ class StickerRendererTest {
         assertNotNull(customOutline)
         assertTrue(customOutline!!.width > noOutline!!.width)
     }
+
+    @Test
+    fun `renderBitmap supports chalk pen style`() {
+        val stroke = Stroke(
+            path = Path().apply { moveTo(10f, 10f); lineTo(80f, 30f) },
+            color = Color.MAGENTA,
+            strokeWidth = 12f,
+            bounds = RectF(10f, 10f, 80f, 30f),
+            style = PenStyle.CHALK
+        )
+        val bmp = StickerRenderer.renderBitmap(listOf(stroke))
+        assertNotNull(bmp)
+        assertTrue(bmp!!.width > 0 && bmp.height > 0)
+    }
 }

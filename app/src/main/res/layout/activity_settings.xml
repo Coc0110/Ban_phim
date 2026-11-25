@@ -17,7 +17,7 @@
         <!-- Top Bar -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="44dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -26,8 +26,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:background="@drawable/card_surface"
-                android:minWidth="48dp"
-                android:paddingHorizontal="14dp"
+                android:minWidth="46dp"
+                android:paddingHorizontal="12dp"
                 android:stateListAnimator="@null"
                 android:text="←"
                 android:textColor="@color/text_primary"
@@ -44,174 +44,130 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <ScrollView
+        <!-- Brush Style Card -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_weight="1">
+            android:background="@drawable/card_surface"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_pen_style_title"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <com.banphim.ui.BrushSampleView
+                    android:id="@+id/brushNormal"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1" />
+
+                <com.banphim.ui.BrushSampleView
+                    android:id="@+id/brushGlow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1" />
+
+                <com.banphim.ui.BrushSampleView
+                    android:id="@+id/brushDashed"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1" />
+
+                <com.banphim.ui.BrushSampleView
+                    android:id="@+id/brushChalk"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Grid & Outline Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/card_surface"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchShowGrid"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/settings_show_grid"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/divider_color" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchStickerOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_sticker_outline"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/outlineColorSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
-                <!-- Pen Style Card -->
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/card_surface"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:text="@string/settings_outline_color"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_pen_style_title"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <RadioGroup
-                        android:id="@+id/rgPenStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp">
-
-                        <RadioButton
-                            android:id="@+id/rbPenNormal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pen_style_normal"
-                            android:textColor="@color/text_primary" />
-
-                        <RadioButton
-                            android:id="@+id/rbPenGlow"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pen_style_glow"
-                            android:textColor="@color/text_primary" />
-
-                        <RadioButton
-                            android:id="@+id/rbPenDashed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pen_style_dashed"
-                            android:textColor="@color/text_primary" />
-                    </RadioGroup>
-                </LinearLayout>
-
-                <!-- Canvas Grid Card -->
-                <LinearLayout
+                <com.banphim.drawing.ColorStripView
+                    android:id="@+id/stripOutlineColor"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/card_surface"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_canvas_title"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchShowGrid"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/settings_show_grid"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <!-- Sticker Outline Card -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/card_surface"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_sticker_title"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchStickerOutline"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/settings_sticker_outline"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
-
-                    <LinearLayout
-                        android:id="@+id/outlineColorSection"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/settings_outline_color"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:orientation="horizontal">
-
-                            <View
-                                android:id="@+id/outlineColorWhite"
-                                android:layout_width="34dp"
-                                android:layout_height="34dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/circle_swatch_bg" />
-
-                            <View
-                                android:id="@+id/outlineColorBlack"
-                                android:layout_width="34dp"
-                                android:layout_height="34dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/circle_swatch_bg" />
-
-                            <View
-                                android:id="@+id/outlineColorYellow"
-                                android:layout_width="34dp"
-                                android:layout_height="34dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/circle_swatch_bg" />
-
-                            <View
-                                android:id="@+id/outlineColorPink"
-                                android:layout_width="34dp"
-                                android:layout_height="34dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/circle_swatch_bg" />
-
-                            <View
-                                android:id="@+id/outlineColorBlue"
-                                android:layout_width="34dp"
-                                android:layout_height="34dp"
-                                android:background="@drawable/circle_swatch_bg" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
+                    android:layout_height="34dp"
+                    android:layout_marginTop="8dp" />
             </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
+
+        <!-- Live Preview Canvas at Bottom -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/settings_preview_title"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <com.banphim.ui.StickerPreviewView
+            android:id="@+id/stickerPreview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="6dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

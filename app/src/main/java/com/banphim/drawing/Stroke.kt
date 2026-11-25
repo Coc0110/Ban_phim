@@ -6,7 +6,8 @@ import android.graphics.RectF
 enum class PenStyle {
     NORMAL,
     GLOW,
-    DASHED
+    DASHED,
+    CHALK
 }
 
 data class Stroke(

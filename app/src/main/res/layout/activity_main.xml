@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_header_gradient"
+            android:elevation="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="18dp">
@@ -28,7 +29,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:contentDescription="@string/app_name"
-                android:src="@mipmap/ic_launcher_round" />
+                android:src="@drawable/doodle_keyboard_icon" />
 
             <TextView
                 android:layout_width="0dp"
@@ -56,13 +57,22 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Single Settings Button -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Centered Settings Button -->
         <Button
             android:id="@+id/btnOpenSettings"
-            android:layout_width="match_parent"
+            android:layout_width="220dp"
             android:layout_height="52dp"
-            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
             android:background="@drawable/card_surface"
+            android:drawableStart="@drawable/ic_settings"
+            android:drawablePadding="10dp"
+            android:elevation="3dp"
+            android:paddingHorizontal="24dp"
             android:stateListAnimator="@null"
             android:text="@string/btn_open_settings"
             android:textAllCaps="false"
@@ -73,7 +83,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1.2" />
 
         <!-- Dedicated Ad Banner Container (Play Store / AdMob ready) -->
         <FrameLayout

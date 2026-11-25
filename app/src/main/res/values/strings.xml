@@ -18,15 +18,11 @@
     <string name="btn_open_settings">Cài đặt</string>
 
     <string name="settings_title">Cài đặt</string>
-    <string name="settings_pen_style_title">Loại nét bút</string>
-    <string name="pen_style_normal">Nét thường (mịn)</string>
-    <string name="pen_style_glow">Nét phát sáng (Neon)</string>
-    <string name="pen_style_dashed">Nét đứt</string>
-    <string name="settings_canvas_title">Nền bảng vẽ</string>
-    <string name="settings_show_grid">Hiển thị đường kẻ ô</string>
-    <string name="settings_sticker_title">Hiển thị sticker khi gửi</string>
-    <string name="settings_sticker_outline">Viền bao quanh sticker</string>
-    <string name="settings_outline_color">Màu viền sticker</string>
+    <string name="settings_pen_style_title">Nét bút</string>
+    <string name="settings_show_grid">Nền ô lưới</string>
+    <string name="settings_sticker_outline">Viền</string>
+    <string name="settings_outline_color">Màu viền</string>
+    <string name="settings_preview_title">Mẫu xem trước</string>
 
     <string name="ad_placeholder_label">Vùng gắn quảng cáo (AdMob Banner)</string>
     <string name="toast_unsupported_field">Ứng dụng này không hỗ trợ nhận nhãn dán trực tiếp. Đã sao chép vào bộ nhớ tạm.</string>

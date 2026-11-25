@@ -3,7 +3,6 @@ package com.banphim.drawing
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -159,19 +158,7 @@ class DrawingView @JvmOverloads constructor(
         strokeWidth: Float,
         style: PenStyle
     ) {
-        if (style == PenStyle.GLOW) {
-            glowPaint.color = Color.argb(75, Color.red(color), Color.green(color), Color.blue(color))
-            glowPaint.strokeWidth = strokeWidth * 2.0f
-            canvas.drawPath(path, glowPaint)
-        }
-        paint.color = color
-        paint.strokeWidth = strokeWidth
-        paint.pathEffect = if (style == PenStyle.DASHED) {
-            DashPathEffect(floatArrayOf(strokeWidth * 1.4f, strokeWidth * 1.4f), 0f)
-        } else {
-            null
-        }
-        canvas.drawPath(path, paint)
+        PenStyleRenderer.drawStroke(canvas, path, color, strokeWidth, style, paint, glowPaint)
     }
 
     private fun drawSubtleGrid(canvas: Canvas) {

@@ -86,24 +86,15 @@ object StickerRenderer {
         }
 
         for (stroke in strokes) {
-            if (stroke.style == PenStyle.GLOW) {
-                glowPaint.color = Color.argb(
-                    85,
-                    Color.red(stroke.color),
-                    Color.green(stroke.color),
-                    Color.blue(stroke.color)
-                )
-                glowPaint.strokeWidth = stroke.strokeWidth * 2.0f
-                canvas.drawPath(stroke.path, glowPaint)
-            }
-            strokePaint.color = stroke.color
-            strokePaint.strokeWidth = stroke.strokeWidth
-            strokePaint.pathEffect = if (stroke.style == PenStyle.DASHED) {
-                DashPathEffect(floatArrayOf(stroke.strokeWidth * 1.4f, stroke.strokeWidth * 1.4f), 0f)
-            } else {
-                null
-            }
-            canvas.drawPath(stroke.path, strokePaint)
+            PenStyleRenderer.drawStroke(
+                canvas = canvas,
+                path = stroke.path,
+                color = stroke.color,
+                strokeWidth = stroke.strokeWidth,
+                style = stroke.style,
+                mainPaint = strokePaint,
+                glowPaint = glowPaint
+            )
         }
 
         return bitmap

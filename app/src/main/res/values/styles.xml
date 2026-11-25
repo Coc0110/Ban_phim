@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.BanPhim" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/paper_bg</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

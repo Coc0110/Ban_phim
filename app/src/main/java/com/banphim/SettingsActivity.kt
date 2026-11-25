@@ -2,15 +2,15 @@ package com.banphim
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import com.banphim.drawing.ColorStripView
 import com.banphim.drawing.PenStyle
+import com.banphim.ui.BrushSampleView
+import com.banphim.ui.StickerPreviewView
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -19,28 +19,44 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         val prefs = getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE)
+        val preview = findViewById<StickerPreviewView>(R.id.stickerPreview)
 
         findViewById<Button>(R.id.btnBackSettings).setOnClickListener { finish() }
 
-        val rgPenStyle = findViewById<RadioGroup>(R.id.rgPenStyle)
-        when (prefs.getString("pen_style", PenStyle.NORMAL.name)) {
-            PenStyle.GLOW.name -> rgPenStyle.check(R.id.rbPenGlow)
-            PenStyle.DASHED.name -> rgPenStyle.check(R.id.rbPenDashed)
-            else -> rgPenStyle.check(R.id.rbPenNormal)
-        }
-        rgPenStyle.setOnCheckedChangeListener { _, checkedId ->
-            val style = when (checkedId) {
-                R.id.rbPenGlow -> PenStyle.GLOW
-                R.id.rbPenDashed -> PenStyle.DASHED
-                else -> PenStyle.NORMAL
+        val brushSamples = listOf(
+            findViewById<BrushSampleView>(R.id.brushNormal) to PenStyle.NORMAL,
+            findViewById<BrushSampleView>(R.id.brushGlow) to PenStyle.GLOW,
+            findViewById<BrushSampleView>(R.id.brushDashed) to PenStyle.DASHED,
+            findViewById<BrushSampleView>(R.id.brushChalk) to PenStyle.CHALK
+        )
+        var currentStyle = runCatching {
+            PenStyle.valueOf(prefs.getString("pen_style", PenStyle.NORMAL.name) ?: PenStyle.NORMAL.name)
+        }.getOrDefault(PenStyle.NORMAL)
+
+        fun refreshBrushSamples() {
+            for ((view, style) in brushSamples) {
+                view.penStyle = style
+                view.isBrushSelected = style == currentStyle
             }
-            prefs.edit().putString("pen_style", style.name).apply()
+            preview.penStyle = currentStyle
         }
 
+        for ((view, style) in brushSamples) {
+            view.setOnClickListener {
+                currentStyle = style
+                prefs.edit().putString("pen_style", style.name).apply()
+                refreshBrushSamples()
+            }
+        }
+        refreshBrushSamples()
+
         val switchShowGrid = findViewById<SwitchCompat>(R.id.switchShowGrid)
-        switchShowGrid.isChecked = prefs.getBoolean("show_grid", true)
+        val showGrid = prefs.getBoolean("show_grid", true)
+        switchShowGrid.isChecked = showGrid
+        preview.showGrid = showGrid
         switchShowGrid.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("show_grid", isChecked).apply()
+            preview.showGrid = isChecked
         }
 
         val switchOutline = findViewById<SwitchCompat>(R.id.switchStickerOutline)
@@ -48,39 +64,23 @@ class SettingsActivity : AppCompatActivity() {
         val outlineEnabled = prefs.getBoolean("sticker_outline_enabled", true)
         switchOutline.isChecked = outlineEnabled
         outlineColorSection.visibility = if (outlineEnabled) View.VISIBLE else View.GONE
+        preview.outlineEnabled = outlineEnabled
         switchOutline.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("sticker_outline_enabled", isChecked).apply()
             outlineColorSection.visibility = if (isChecked) View.VISIBLE else View.GONE
+            preview.outlineEnabled = isChecked
         }
 
-        val swatches = listOf(
-            findViewById<View>(R.id.outlineColorWhite) to Color.WHITE,
-            findViewById<View>(R.id.outlineColorBlack) to Color.BLACK,
-            findViewById<View>(R.id.outlineColorYellow) to Color.parseColor("#FFD54F"),
-            findViewById<View>(R.id.outlineColorPink) to Color.parseColor("#FF80AB"),
-            findViewById<View>(R.id.outlineColorBlue) to Color.parseColor("#4FC3F7")
-        )
-        var selectedColor = prefs.getInt("sticker_outline_color", Color.WHITE)
+        val stripOutline = findViewById<ColorStripView>(R.id.stripOutlineColor)
+        stripOutline.orientation = ColorStripView.Orientation.HORIZONTAL
+        stripOutline.autoHideOnRelease = false
+        val savedOutlineColor = prefs.getInt("sticker_outline_color", Color.WHITE)
+        stripOutline.setSelectedColor(savedOutlineColor)
+        preview.outlineColor = savedOutlineColor
 
-        fun refreshSwatches() {
-            for ((view, color) in swatches) {
-                val layer = view.background?.mutate() as? LayerDrawable
-                val fill = layer?.findDrawableByLayerId(R.id.swatch_fill) as? GradientDrawable
-                fill?.setColor(color)
-                val selected = color == selectedColor
-                view.scaleX = if (selected) 1.18f else 1.0f
-                view.scaleY = if (selected) 1.18f else 1.0f
-                view.alpha = if (selected) 1.0f else 0.72f
-            }
+        stripOutline.onColorSelected = { color ->
+            prefs.edit().putInt("sticker_outline_color", color).apply()
+            preview.outlineColor = color
         }
-
-        for ((view, color) in swatches) {
-            view.setOnClickListener {
-                selectedColor = color
-                prefs.edit().putInt("sticker_outline_color", color).apply()
-                refreshSwatches()
-            }
-        }
-        refreshSwatches()
     }
 }

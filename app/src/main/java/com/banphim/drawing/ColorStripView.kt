@@ -50,6 +50,7 @@ class ColorStripView @JvmOverloads constructor(
     var selectedColor: Int = Color.BLACK
         private set
 
+    var autoHideOnRelease: Boolean = true
     var onColorSelected: ((Int) -> Unit)? = null
     var onDismissed: (() -> Unit)? = null
 
@@ -168,11 +169,11 @@ class ColorStripView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP -> {
                 updateFromTouch(event.x, event.y)
-                hide()
+                if (autoHideOnRelease) hide()
                 return true
             }
             MotionEvent.ACTION_CANCEL -> {
-                hide()
+                if (autoHideOnRelease) hide()
                 return true
             }
         }

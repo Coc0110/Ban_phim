@@ -1,6 +1,7 @@
 package com.banphim.ui
 
 import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -38,17 +39,22 @@ class GridPaperView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
-        strokeWidth = 7f * density
+        strokeWidth = 9f * density
+        maskFilter = BlurMaskFilter(7f * density, BlurMaskFilter.Blur.NORMAL)
     }
 
     private val doodlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
-        strokeWidth = 3.2f * density
+        strokeWidth = 2.6f * density
     }
 
     private val reusablePath = Path()
+
+    init {
+        setLayerType(LAYER_TYPE_SOFTWARE, null)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -110,8 +116,8 @@ class GridPaperView @JvmOverloads constructor(
     }
 
     private fun strokeWithHalo(canvas: Canvas, path: Path, cx: Float, cy: Float, radius: Float, c1: Int, c2: Int) {
-        val alphaMain = if (isDarkPaper) 90 else 115
-        val alphaHalo = if (isDarkPaper) 26 else 34
+        val alphaMain = if (isDarkPaper) 175 else 145
+        val alphaHalo = if (isDarkPaper) 130 else 95
         val start = Color.argb(alphaMain, Color.red(c1), Color.green(c1), Color.blue(c1))
         val end = Color.argb(alphaMain, Color.red(c2), Color.green(c2), Color.blue(c2))
         val haloStart = Color.argb(alphaHalo, Color.red(c1), Color.green(c1), Color.blue(c1))

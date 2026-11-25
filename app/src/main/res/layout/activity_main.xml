@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/app_bg"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <com.banphim.ui.GridPaperView
+        android:id="@+id/gridPaperBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -121,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="14dp"
-                    android:background="#E8EDF5" />
+                    android:background="@color/divider_color" />
 
                 <!-- Step 2 -->
                 <LinearLayout
@@ -280,8 +288,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/ad_placeholder_label"
-            android:textColor="#8A95A8"
+            android:textColor="@color/ad_slot_text"
             android:textSize="12sp" />
     </FrameLayout>
 
-</LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

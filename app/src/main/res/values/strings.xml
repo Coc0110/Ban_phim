@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bàn phím Vẽ Sticker</string>
-    <string name="ime_name">Bảng vẽ Sticker</string>
+    <string name="app_name">Doodle Keyboard</string>
+    <string name="ime_name">Doodle Keyboard</string>
     <string name="btn_back_keyboard">Quay lại bàn phím thường</string>
     <string name="btn_bg_color">Màu nền bảng vẽ</string>
     <string name="btn_pen_color">Màu bút</string>
@@ -12,7 +12,7 @@
     <string name="btn_send">Gửi nhãn dán</string>
     <string name="btn_send_short">GỬI</string>
 
-    <string name="setup_title">Bàn phím Vẽ Sticker</string>
+    <string name="setup_title">Doodle Keyboard</string>
     <string name="setup_subtitle">Vẽ chữ tay &amp; gửi nhãn dán tách nền ngay trong khung chat</string>
 
     <string name="step_1_title">Bước 1: Kích hoạt bàn phím</string>

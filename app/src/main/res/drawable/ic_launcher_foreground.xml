@@ -3,22 +3,33 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Sticker card with folded corner -->
+    <!-- A note card rising from a small keyboard, with a bright doodle stroke. -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M32,26h32l14,14v38c0,3.3 -2.7,6 -6,6H32c-3.3,0 -6,-2.7 -6,-6V32C26,28.7 28.7,26 32,26z" />
+        android:pathData="M30,20h34l14,14v36c0,3.3 -2.7,6 -6,6H30c-3.3,0 -6,-2.7 -6,-6V26c0,-3.3 2.7,-6 6,-6z" />
     <path
-        android:fillColor="#D9E2F3"
-        android:pathData="M64,26v10c0,2.2 1.8,4 4,4h10L64,26z" />
-    <!-- Hand-drawn squiggle -->
+        android:fillColor="#E7E5FF"
+        android:pathData="M64,20v10c0,2.2 1.8,4 4,4h10L64,20z" />
     <path
         android:fillColor="#00000000"
-        android:pathData="M36,64c4,-8 10,-8 14,0s10,8 14,0"
-        android:strokeWidth="4.5"
-        android:strokeColor="#FF4081"
+        android:pathData="M34,50c5,-9 11,-10 16,-1s11,8 17,-1"
+        android:strokeWidth="5"
+        android:strokeColor="#FF5C8A"
         android:strokeLineCap="round" />
-    <!-- Pen nib -->
     <path
-        android:fillColor="#1E88E5"
-        android:pathData="M63.5,43.5l5,5L55,62l-6,1l1,-6L63.5,43.5z" />
+        android:fillColor="#00000000"
+        android:pathData="M36,62c4,-5 8,-5 12,0s8,5 12,0"
+        android:strokeWidth="4"
+        android:strokeColor="#48C9B0"
+        android:strokeLineCap="round" />
+    <!-- Keyboard base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,78h60c3.3,0 6,2.7 6,6v3c0,3.3 -2.7,6 -6,6H24c-3.3,0 -6,-2.7 -6,-6v-3c0,-3.3 2.7,-6 6,-6z" />
+    <path
+        android:fillColor="#6C63FF"
+        android:pathData="M29,82h6v5h-6zM39,82h6v5h-6zM49,82h6v5h-6zM59,82h6v5h-6zM69,82h6v5h-6zM79,82h5v5h-5z" />
+    <path
+        android:fillColor="#FFCA5C"
+        android:pathData="M47,89h22v2H47z" />
 </vector>

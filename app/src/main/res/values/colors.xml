@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_bg">#F6F8FC</color>
+    <color name="paper_bg">#FFFFFF</color>
+    <color name="paper_grid_line">#18000000</color>
+    <color name="card_bg">#F7FAFFFC</color>
+    <color name="card_stroke">#DCE3EE</color>
+    <color name="divider_color">#E8EDF5</color>
+    <color name="input_bg">#F6F8FC</color>
+    <color name="btn_secondary_bg">#EEF3FC</color>
+    <color name="btn_secondary_stroke">#C9D8F5</color>
+    <color name="ad_slot_bg">#F1F4F9</color>
+    <color name="ad_slot_text">#8A95A8</color>
+    <color name="badge_done_bg">#E8F5E9</color>
+    <color name="badge_pending_bg">#FFF3E0</color>
     <color name="text_primary">#141B29</color>
     <color name="text_secondary">#5A657A</color>
     <color name="status_done_text">#1B5E20</color>
     <color name="status_pending_text">#E65100</color>
-    <color name="default_canvas_bg">#FFFFFF</color>
-    <color name="default_pen_color">#111111</color>
+    <color name="default_canvas_bg">#1C1E22</color>
+    <color name="default_pen_color">#FFF176</color>
     <color name="control_bg">#E6FFFFFF</color>
     <color name="control_icon_tint">#222222</color>
     <color name="send_bg">#1E88E5</color>

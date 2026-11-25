@@ -3,6 +3,7 @@ package com.banphim.drawing
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -23,6 +24,11 @@ class DrawingView @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
+    }
     private val gridPaint = Paint().apply {
         strokeWidth = 1f * resources.displayMetrics.density
     }
@@ -36,6 +42,8 @@ class DrawingView @JvmOverloads constructor(
     private var currentPenColor: Int = Color.parseColor("#FFF176")
     private var currentCanvasColor: Int = Color.parseColor("#1C1E22")
     private var currentStrokeWidth: Float = 10f * resources.displayMetrics.density
+    private var currentPenStyle: PenStyle = PenStyle.NORMAL
+    private var showGrid: Boolean = true
     private var brushPreviewVisible: Boolean = false
 
     private var activePath: Path? = null
@@ -70,6 +78,17 @@ class DrawingView @JvmOverloads constructor(
     }
 
     fun getStrokeWidth(): Float = currentStrokeWidth
+
+    fun setPenStyle(style: PenStyle) {
+        currentPenStyle = style
+    }
+
+    fun setShowGrid(show: Boolean) {
+        if (showGrid != show) {
+            showGrid = show
+            invalidate()
+        }
+    }
 
     fun setBrushPreviewVisible(visible: Boolean) {
         if (brushPreviewVisible != visible) {
@@ -114,16 +133,14 @@ class DrawingView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawSubtleGrid(canvas)
+        if (showGrid) {
+            drawSubtleGrid(canvas)
+        }
         for (stroke in history.strokes()) {
-            paint.color = stroke.color
-            paint.strokeWidth = stroke.strokeWidth
-            canvas.drawPath(stroke.path, paint)
+            drawStyledStroke(canvas, stroke.path, stroke.color, stroke.strokeWidth, stroke.style)
         }
         activePath?.let { path ->
-            paint.color = currentPenColor
-            paint.strokeWidth = currentStrokeWidth
-            canvas.drawPath(path, paint)
+            drawStyledStroke(canvas, path, currentPenColor, currentStrokeWidth, currentPenStyle)
         }
         if (brushPreviewVisible) {
             val cx = width / 2f
@@ -133,6 +150,28 @@ class DrawingView @JvmOverloads constructor(
             canvas.drawCircle(cx, cy, r, previewFillPaint)
             canvas.drawCircle(cx, cy, r, previewRingPaint)
         }
+    }
+
+    private fun drawStyledStroke(
+        canvas: Canvas,
+        path: Path,
+        color: Int,
+        strokeWidth: Float,
+        style: PenStyle
+    ) {
+        if (style == PenStyle.GLOW) {
+            glowPaint.color = Color.argb(75, Color.red(color), Color.green(color), Color.blue(color))
+            glowPaint.strokeWidth = strokeWidth * 2.0f
+            canvas.drawPath(path, glowPaint)
+        }
+        paint.color = color
+        paint.strokeWidth = strokeWidth
+        paint.pathEffect = if (style == PenStyle.DASHED) {
+            DashPathEffect(floatArrayOf(strokeWidth * 1.4f, strokeWidth * 1.4f), 0f)
+        } else {
+            null
+        }
+        canvas.drawPath(path, paint)
     }
 
     private fun drawSubtleGrid(canvas: Canvas) {
@@ -188,7 +227,7 @@ class DrawingView @JvmOverloads constructor(
                 path.lineTo(x, y)
                 val bounds = RectF()
                 path.computeBounds(bounds, true)
-                history.push(Stroke(path, currentPenColor, currentStrokeWidth, bounds))
+                history.push(Stroke(path, currentPenColor, currentStrokeWidth, bounds, currentPenStyle))
                 activePath = null
                 invalidate()
                 onHistoryChanged?.invoke()

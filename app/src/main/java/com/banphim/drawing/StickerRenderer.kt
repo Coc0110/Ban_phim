@@ -3,6 +3,7 @@ package com.banphim.drawing
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build
@@ -17,7 +18,8 @@ object StickerRenderer {
         strokes: List<Stroke>,
         maxSizePx: Int = 512,
         outlineWidthPx: Float = 8f,
-        paddingPx: Float = 16f
+        paddingPx: Float = 16f,
+        outlineColor: Int = Color.WHITE
     ): Bitmap? {
         if (strokes.isEmpty()) return null
 
@@ -37,7 +39,7 @@ object StickerRenderer {
         }
         val unionBounds = RectF(minLeft, minTop, maxRight, maxBottom)
 
-        val expand = maxStrokeWidth / 2f + outlineWidthPx + paddingPx
+        val expand = maxStrokeWidth + outlineWidthPx + paddingPx
         unionBounds.inset(-expand, -expand)
 
         val contentWidth = max(1f, unionBounds.width())
@@ -56,7 +58,13 @@ object StickerRenderer {
             style = Paint.Style.STROKE
             strokeCap = Paint.Cap.ROUND
             strokeJoin = Paint.Join.ROUND
-            color = Color.WHITE
+            color = outlineColor
+        }
+
+        val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
         }
 
         val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -68,13 +76,33 @@ object StickerRenderer {
         if (outlineWidthPx > 0f) {
             for (stroke in strokes) {
                 outlinePaint.strokeWidth = stroke.strokeWidth + outlineWidthPx * 2f
+                outlinePaint.pathEffect = if (stroke.style == PenStyle.DASHED) {
+                    DashPathEffect(floatArrayOf(stroke.strokeWidth * 1.4f, stroke.strokeWidth * 1.4f), 0f)
+                } else {
+                    null
+                }
                 canvas.drawPath(stroke.path, outlinePaint)
             }
         }
 
         for (stroke in strokes) {
+            if (stroke.style == PenStyle.GLOW) {
+                glowPaint.color = Color.argb(
+                    85,
+                    Color.red(stroke.color),
+                    Color.green(stroke.color),
+                    Color.blue(stroke.color)
+                )
+                glowPaint.strokeWidth = stroke.strokeWidth * 2.0f
+                canvas.drawPath(stroke.path, glowPaint)
+            }
             strokePaint.color = stroke.color
             strokePaint.strokeWidth = stroke.strokeWidth
+            strokePaint.pathEffect = if (stroke.style == PenStyle.DASHED) {
+                DashPathEffect(floatArrayOf(stroke.strokeWidth * 1.4f, stroke.strokeWidth * 1.4f), 0f)
+            } else {
+                null
+            }
             canvas.drawPath(stroke.path, strokePaint)
         }
 
@@ -85,8 +113,18 @@ object StickerRenderer {
         renderToFile(strokes, cacheDir, "image/png")
 
     @Suppress("DEPRECATION")
-    fun renderToFile(strokes: List<Stroke>, cacheDir: File, mimeType: String): File? {
-        val bitmap = renderBitmap(strokes) ?: return null
+    fun renderToFile(
+        strokes: List<Stroke>,
+        cacheDir: File,
+        mimeType: String,
+        outlineWidthPx: Float = 8f,
+        outlineColor: Int = Color.WHITE
+    ): File? {
+        val bitmap = renderBitmap(
+            strokes = strokes,
+            outlineWidthPx = outlineWidthPx,
+            outlineColor = outlineColor
+        ) ?: return null
         val stickerDir = File(cacheDir, "stickers").apply { mkdirs() }
         stickerDir.listFiles()?.forEach { old ->
             if (old.isFile && System.currentTimeMillis() - old.lastModified() > 60 * 60 * 1000L) {

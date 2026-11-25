@@ -107,4 +107,20 @@ class StickerRendererTest {
         assertTrue(file.exists() && file.length() > 0L)
         dir.deleteRecursively()
     }
+
+    @Test
+    fun `renderBitmap supports custom outline color and disabled outline`() {
+        val stroke = Stroke(
+            path = Path().apply { moveTo(10f, 10f); lineTo(60f, 10f) },
+            color = Color.BLUE,
+            strokeWidth = 10f,
+            bounds = RectF(10f, 10f, 60f, 10f),
+            style = PenStyle.GLOW
+        )
+        val noOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 0f)
+        val customOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 8f, outlineColor = Color.YELLOW)
+        assertNotNull(noOutline)
+        assertNotNull(customOutline)
+        assertTrue(customOutline!!.width > noOutline!!.width)
+    }
 }

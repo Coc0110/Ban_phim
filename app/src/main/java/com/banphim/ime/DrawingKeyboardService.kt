@@ -4,10 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.inputmethodservice.InputMethodService
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -18,6 +20,7 @@ import com.banphim.R
 import com.banphim.drawing.BrushSizeSliderView
 import com.banphim.drawing.ColorStripView
 import com.banphim.drawing.DrawingView
+import com.banphim.drawing.PenStyle
 import com.banphim.drawing.StickerRenderer
 
 class DrawingKeyboardService : InputMethodService() {
@@ -63,15 +66,7 @@ class DrawingKeyboardService : InputMethodService() {
         stripBgColor.orientation = ColorStripView.Orientation.VERTICAL
 
         val prefs = getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE)
-        if (prefs.contains("pen_color")) {
-            drawingView.setPenColor(prefs.getInt("pen_color", drawingView.getPenColor()))
-        }
-        if (prefs.contains("canvas_color")) {
-            drawingView.setCanvasColor(prefs.getInt("canvas_color", drawingView.getCanvasColor()))
-        }
-        if (prefs.contains("brush_size_px")) {
-            drawingView.setStrokeWidth(prefs.getFloat("brush_size_px", drawingView.getStrokeWidth()))
-        }
+        applyUserPreferences(prefs)
         sliderBrushSize.setStrokeWidthPx(drawingView.getStrokeWidth())
 
         updateSwatchColor(btnPenColor, drawingView.getPenColor())
@@ -158,6 +153,29 @@ class DrawingKeyboardService : InputMethodService() {
         return root
     }
 
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        if (::drawingView.isInitialized) {
+            applyUserPreferences(getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE))
+        }
+    }
+
+    private fun applyUserPreferences(prefs: android.content.SharedPreferences) {
+        if (prefs.contains("pen_color")) {
+            drawingView.setPenColor(prefs.getInt("pen_color", drawingView.getPenColor()))
+        }
+        if (prefs.contains("canvas_color")) {
+            drawingView.setCanvasColor(prefs.getInt("canvas_color", drawingView.getCanvasColor()))
+        }
+        if (prefs.contains("brush_size_px")) {
+            drawingView.setStrokeWidth(prefs.getFloat("brush_size_px", drawingView.getStrokeWidth()))
+        }
+        val styleName = prefs.getString("pen_style", PenStyle.NORMAL.name) ?: PenStyle.NORMAL.name
+        val style = runCatching { PenStyle.valueOf(styleName) }.getOrDefault(PenStyle.NORMAL)
+        drawingView.setPenStyle(style)
+        drawingView.setShowGrid(prefs.getBoolean("show_grid", true))
+    }
+
     private fun closeAllPopups() {
         sliderBrushSize.hide()
         stripPenColor.hide()
@@ -189,9 +207,20 @@ class DrawingKeyboardService : InputMethodService() {
         val strokes = drawingView.getStrokes()
         if (strokes.isEmpty()) return
 
+        val prefs = getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE)
+        val outlineEnabled = prefs.getBoolean("sticker_outline_enabled", true)
+        val outlineWidth = if (outlineEnabled) 8f else 0f
+        val outlineColor = prefs.getInt("sticker_outline_color", Color.WHITE)
+
         val mimeType = StickerCommitter.preferredMimeType(currentInputEditorInfo)
         val renderMime = mimeType ?: StickerCommitter.MIME_WEBP
-        val file = StickerRenderer.renderToFile(strokes, cacheDir, renderMime) ?: return
+        val file = StickerRenderer.renderToFile(
+            strokes = strokes,
+            cacheDir = cacheDir,
+            mimeType = renderMime,
+            outlineWidthPx = outlineWidth,
+            outlineColor = outlineColor
+        ) ?: return
         val authority = "${BuildConfig.APPLICATION_ID}.fileprovider"
         val contentUri = runCatching {
             FileProvider.getUriForFile(applicationContext, authority, file)

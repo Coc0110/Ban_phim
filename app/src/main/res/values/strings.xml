@@ -13,28 +13,21 @@
     <string name="btn_send_short">GỬI</string>
 
     <string name="setup_title">Doodle Keyboard</string>
-    <string name="setup_subtitle">Vẽ chữ tay &amp; gửi nhãn dán tách nền ngay trong khung chat</string>
+    <string name="btn_enable_keyboard">Bật</string>
+    <string name="btn_keyboard_enabled">Đã bật</string>
+    <string name="btn_open_settings">Cài đặt</string>
 
-    <string name="step_1_title">Bước 1: Kích hoạt bàn phím</string>
-    <string name="step_1_desc">Cho phép "Bảng vẽ Sticker" hoạt động trong phần Cài đặt bàn phím của máy.</string>
-    <string name="setup_step_1">Mở Cài đặt bàn phím</string>
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_pen_style_title">Loại nét bút</string>
+    <string name="pen_style_normal">Nét thường (mịn)</string>
+    <string name="pen_style_glow">Nét phát sáng (Neon)</string>
+    <string name="pen_style_dashed">Nét đứt</string>
+    <string name="settings_canvas_title">Nền bảng vẽ</string>
+    <string name="settings_show_grid">Hiển thị đường kẻ ô</string>
+    <string name="settings_sticker_title">Hiển thị sticker khi gửi</string>
+    <string name="settings_sticker_outline">Viền bao quanh sticker</string>
+    <string name="settings_outline_color">Màu viền sticker</string>
 
-    <string name="step_2_title">Bước 2: Chọn làm bàn phím thử</string>
-    <string name="step_2_desc">Chuyển nhanh sang Bảng vẽ Sticker để vẽ thử ngay bên dưới.</string>
-    <string name="setup_step_2">Chọn bàn phím</string>
-
-    <string name="status_enabled">Đã bật</string>
-    <string name="status_not_enabled">Chưa bật</string>
-    <string name="status_selected">Đang dùng</string>
-    <string name="status_not_selected">Chưa chọn</string>
-
-    <string name="guide_title">Mẹo sử dụng nhanh</string>
-    <string name="guide_tip_1">• Chạm nút bàn phím nhỏ của Android ở góc dưới màn hình để chuyển nhanh qua lại giữa bàn phím chữ và bảng vẽ.</string>
-    <string name="guide_tip_2">• Chạm nút màu bút / màu nền để mở thanh trượt: kéo dọc theo thanh để đổi màu, kéo chệch ra ngoài thanh để chỉnh độ đậm nhạt.</string>
-    <string name="guide_tip_3">• Nét vẽ khi gửi sẽ tự động tách nền và bọc viền trắng để nổi rõ trên mọi giao diện chat.</string>
-
-    <string name="test_section_title">Khu vực vẽ thử</string>
-    <string name="test_input_hint">Chạm vào đây rồi đổi sang Bảng vẽ Sticker để thử…</string>
     <string name="ad_placeholder_label">Vùng gắn quảng cáo (AdMob Banner)</string>
     <string name="toast_unsupported_field">Ứng dụng này không hỗ trợ nhận nhãn dán trực tiếp. Đã sao chép vào bộ nhớ tạm.</string>
 </resources>

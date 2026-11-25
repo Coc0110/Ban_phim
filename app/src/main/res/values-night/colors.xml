@@ -2,7 +2,7 @@
 <resources>
     <color name="paper_bg">#141518</color>
     <color name="paper_grid_line">#2EFFD54F</color>
-    <color name="card_bg">#EB1E2026</color>
+    <color name="card_bg">#E01E2026</color>
     <color name="card_stroke">#353844</color>
     <color name="divider_color">#2C303A</color>
     <color name="input_bg">#16181D</color>

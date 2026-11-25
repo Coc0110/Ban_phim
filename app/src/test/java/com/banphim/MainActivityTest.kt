@@ -33,10 +33,10 @@ class MainActivityTest {
 
     @Test
     @Config(qualifiers = "notnight")
-    fun `light mode uses white paper and dark grid lines`() {
+    fun `light mode uses warm cream paper and dark grid lines`() {
         val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         val paper = activity.findViewById<GridPaperView>(R.id.gridPaperBg)
-        assertEquals(Color.WHITE, paper.paperColor)
+        assertEquals(Color.parseColor("#FBF6E9"), paper.paperColor)
         assertEquals(0, Color.red(paper.gridLineColor))
         assertTrue(Color.alpha(paper.gridLineColor) > 0)
     }

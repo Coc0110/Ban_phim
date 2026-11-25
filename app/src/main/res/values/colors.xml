@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="paper_bg">#FFFFFF</color>
-    <color name="paper_grid_line">#18000000</color>
-    <color name="card_bg">#F7FAFFFC</color>
+    <color name="paper_bg">#FBF6E9</color>
+    <color name="paper_grid_line">#1E000000</color>
+    <color name="card_bg">#EBFFFFFF</color>
     <color name="card_stroke">#DCE3EE</color>
     <color name="divider_color">#E8EDF5</color>
     <color name="input_bg">#F6F8FC</color>

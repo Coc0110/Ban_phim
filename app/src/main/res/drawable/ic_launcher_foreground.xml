@@ -3,33 +3,42 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- A note card rising from a small keyboard, with a bright doodle stroke. -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M30,20h34l14,14v36c0,3.3 -2.7,6 -6,6H30c-3.3,0 -6,-2.7 -6,-6V26c0,-3.3 2.7,-6 6,-6z" />
-    <path
-        android:fillColor="#E7E5FF"
-        android:pathData="M64,20v10c0,2.2 1.8,4 4,4h10L64,20z" />
+    <!-- Neon keyboard, with hand-drawn heart and star doodles. -->
+    <!-- Keyboard outline and key rows -->
     <path
         android:fillColor="#00000000"
-        android:pathData="M34,50c5,-9 11,-10 16,-1s11,8 17,-1"
-        android:strokeWidth="5"
-        android:strokeColor="#FF5C8A"
-        android:strokeLineCap="round" />
+        android:pathData="M21,55c0,-3.3 2.7,-6 6,-6h54c3.3,0 6,2.7 6,6v26c0,3.3 -2.7,6 -6,6H27c-3.3,0 -6,-2.7 -6,-6z"
+        android:strokeWidth="3.4"
+        android:strokeColor="#31E6F4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
     <path
         android:fillColor="#00000000"
-        android:pathData="M36,62c4,-5 8,-5 12,0s8,5 12,0"
-        android:strokeWidth="4"
-        android:strokeColor="#48C9B0"
+        android:pathData="M29,59h7v6h-7zM42,59h7v6h-7zM55,59h7v6h-7zM68,59h7v6h-7zM29,71h7v6h-7zM42,71h7v6h-7zM55,71h7v6h-7zM68,71h12v6h-12z"
+        android:strokeWidth="2.5"
+        android:strokeColor="#55DDF3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- Hand-drawn heart -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M34,36c-9,-9 -18,1 -11,10l14,13 13,-15c7,-9 -4,-18 -12,-8l-2,3z"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FF74BD"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- Hand-drawn star -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M75,20l4,9 10,1 -8,6 3,10 -9,-6 -8,6 3,-10 -8,-6 10,-1z"
+        android:strokeWidth="3.2"
+        android:strokeColor="#FFE66D"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,43c-2,-2 -4,-2 -5,0"
+        android:strokeWidth="2.2"
+        android:strokeColor="#51EAF4"
         android:strokeLineCap="round" />
-    <!-- Keyboard base -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M24,78h60c3.3,0 6,2.7 6,6v3c0,3.3 -2.7,6 -6,6H24c-3.3,0 -6,-2.7 -6,-6v-3c0,-3.3 2.7,-6 6,-6z" />
-    <path
-        android:fillColor="#6C63FF"
-        android:pathData="M29,82h6v5h-6zM39,82h6v5h-6zM49,82h6v5h-6zM59,82h6v5h-6zM69,82h6v5h-6zM79,82h5v5h-5z" />
-    <path
-        android:fillColor="#FFCA5C"
-        android:pathData="M47,89h22v2H47z" />
 </vector>

@@ -100,6 +100,15 @@ class ColorStripView @JvmOverloads constructor(
         shaderDirty = true
     }
 
+    private fun thumbRadiusOf(w: Float, h: Float): Float = minOf(w, h) * 0.42f
+
+    /**
+     * Che do NGANG: le hai dau thanh = ban kinh nut + nua net vien,
+     * de nut khi keo het coi van nam tron trong view (khong bi cat / tran).
+     */
+    private fun horizontalInset(w: Float, h: Float): Float =
+        (thumbRadiusOf(w, h) + thumbOuterRingPaint.strokeWidth / 2f).coerceAtMost(w / 2f)
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val w = width.toFloat()
@@ -118,8 +127,9 @@ class ColorStripView @JvmOverloads constructor(
             barTop = pad
             barBottom = h - pad
         } else {
-            barLeft = pad
-            barRight = w - pad
+            val inset = horizontalInset(w, h)
+            barLeft = inset
+            barRight = w - inset
             barTop = pad
             barBottom = h - pad
         }
@@ -140,7 +150,7 @@ class ColorStripView @JvmOverloads constructor(
         canvas.drawPath(clipPath, barPaint)
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, borderPaint)
 
-        val thumbRadius = minOf(w, h) * 0.42f
+        val thumbRadius = thumbRadiusOf(w, h)
         val cx: Float
         val cy: Float
         if (orientation == Orientation.VERTICAL) {
@@ -150,9 +160,8 @@ class ColorStripView @JvmOverloads constructor(
             cy = travelTop + thumbProgress * (travelBottom - travelTop)
         } else {
             cy = h / 2f
-            val travelLeft = barLeft + thumbRadius * 0.5f
-            val travelRight = barRight - thumbRadius * 0.5f
-            cx = travelLeft + thumbProgress * (travelRight - travelLeft)
+            // Tam nut chay tu dau den cuoi thanh mau
+            cx = barLeft + thumbProgress * (barRight - barLeft)
         }
 
         thumbFillPaint.color = selectedColor
@@ -191,7 +200,10 @@ class ColorStripView @JvmOverloads constructor(
             progress = (y / h).coerceIn(0f, 1f)
             perpDelta = (w / 2f) - x
         } else {
-            progress = (x / w).coerceIn(0f, 1f)
+            // Tinh theo dung doan thanh mau (da tru le), de nut bam sat ngon tay
+            val inset = horizontalInset(w, h)
+            val span = (w - 2f * inset).coerceAtLeast(1f)
+            progress = ((x - inset) / span).coerceIn(0f, 1f)
             perpDelta = y - (h / 2f)
         }
 

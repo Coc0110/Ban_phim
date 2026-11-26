@@ -20,27 +20,26 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="20dp"
-            android:paddingTop="12dp"
+            android:paddingTop="8dp"
             android:paddingEnd="20dp"
-            android:paddingBottom="24dp">
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="48dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnBackSettings"
                     android:layout_width="44dp"
                     android:layout_height="40dp"
                     android:background="@drawable/card_surface"
-                    android:minWidth="0dp"
-                    android:padding="0dp"
-                    android:stateListAnimator="@null"
-                    android:text="←"
-                    android:textColor="@color/text_primary"
-                    android:textSize="20sp" />
+                    android:contentDescription="@string/btn_test_back"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_chevron_left"
+                    android:tint="@color/text_primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -52,14 +51,17 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- MOT THE DUY NHAT chua tat ca muc cai dat -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/card_surface"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp">
 
+                <!-- Net but -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -70,19 +72,12 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <com.banphim.ui.BrushSampleView
                         android:id="@+id/brushNormal"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1" />
-
-                    <com.banphim.ui.BrushSampleView
-                        android:id="@+id/brushBrush"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
@@ -101,16 +96,15 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1" />
                 </LinearLayout>
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/card_surface"
-                android:orientation="vertical"
-                android:padding="16dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/divider_color" />
 
+                <!-- Nen o luoi -->
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchShowGrid"
                     android:layout_width="match_parent"
@@ -124,9 +118,10 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginVertical="8dp"
+                    android:layout_marginVertical="4dp"
                     android:background="@color/divider_color" />
 
+                <!-- Vien + mau vien -->
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchStickerOutline"
                     android:layout_width="match_parent"
@@ -141,7 +136,7 @@
                     android:id="@+id/outlineColorSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="4dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -156,26 +151,29 @@
                         android:id="@+id/stripOutlineColor"
                         android:layout_width="match_parent"
                         android:layout_height="38dp"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="6dp" />
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Ban phim thu -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="18dp"
-                android:text="@string/settings_preview_title"
+                android:layout_marginTop="10dp"
+                android:text="@string/settings_test_title"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <com.banphim.ui.StickerPreviewView
-                android:id="@+id/stickerPreview"
+            <!-- Chinh layout ban phim that -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/card_surface" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp">
+
+                <include layout="@layout/keyboard_drawing" />
+            </FrameLayout>
 
         </LinearLayout>
     </ScrollView>

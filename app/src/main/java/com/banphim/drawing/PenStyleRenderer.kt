@@ -10,7 +10,6 @@ import android.graphics.Path
 import android.graphics.PathMeasure
 import kotlin.math.cos
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sin
 
 object PenStyleRenderer {
@@ -34,7 +33,6 @@ object PenStyleRenderer {
                 mainPaint.pathEffect = null
                 canvas.drawPath(path, mainPaint)
             }
-            PenStyle.BRUSH -> drawBrushStroke(canvas, path, color, strokeWidth, 0f, glowPaint)
             PenStyle.PENCIL -> drawPencilStroke(canvas, path, color, strokeWidth, mainPaint)
             PenStyle.FOUNTAIN -> drawFountainStroke(canvas, path, color, strokeWidth, 0f, glowPaint)
         }
@@ -59,7 +57,6 @@ object PenStyleRenderer {
                 mainPaint.pathEffect = null
                 canvas.drawPath(path, mainPaint)
             }
-            PenStyle.BRUSH -> drawBrushStroke(canvas, path, color, baseStrokeWidth, outlineExtraWidth, workPaint)
             PenStyle.PENCIL -> {
                 mainPaint.color = color
                 mainPaint.alpha = 255
@@ -73,73 +70,6 @@ object PenStyleRenderer {
             }
             PenStyle.FOUNTAIN -> drawFountainStroke(canvas, path, color, baseStrokeWidth, outlineExtraWidth, workPaint)
         }
-    }
-
-    private fun drawBrushStroke(
-        canvas: Canvas,
-        path: Path,
-        color: Int,
-        strokeWidth: Float,
-        outlineExtra: Float,
-        workPaint: Paint
-    ) {
-        val pm = PathMeasure(path, false)
-        val pos = FloatArray(2)
-        val tan = FloatArray(2)
-
-        val prevStyle = workPaint.style
-        val prevCap = workPaint.strokeCap
-        workPaint.color = color
-        workPaint.pathEffect = null
-        workPaint.style = Paint.Style.FILL
-
-        var drewAny = false
-        do {
-            val length = pm.length
-            if (length < 1f) {
-                if (pm.getPosTan(0f, pos, tan)) {
-                    canvas.drawCircle(pos[0], pos[1], (strokeWidth + outlineExtra) * 0.5f, workPaint)
-                    drewAny = true
-                }
-                continue
-            }
-
-            drewAny = true
-            val step = max(1f, strokeWidth * 0.10f)
-            var d = 0f
-            while (d <= length) {
-                if (pm.getPosTan(d, pos, tan)) {
-                    val t = d / length
-                    // Calligraphy brush: thin upstrokes (tanY < 0), bold downstrokes (tanY > 0)
-                    val downFactor = (tan[1] + 1f) * 0.5f
-                    val smoothDir = downFactor * downFactor * (3f - 2f * downFactor)
-                    val dirWeight = 0.26f + 1.24f * smoothDir
-
-                    val taperIn = min(1f, t / 0.08f)
-                    val taperOut = min(1f, (1f - t) / 0.10f)
-                    val taper = 0.35f + 0.65f * min(taperIn, taperOut)
-
-                    val diameter = strokeWidth * dirWeight * taper + outlineExtra
-                    canvas.drawCircle(pos[0], pos[1], diameter * 0.5f, workPaint)
-                }
-                d += step
-            }
-            if (pm.getPosTan(length, pos, tan)) {
-                val downFactor = (tan[1] + 1f) * 0.5f
-                val smoothDir = downFactor * downFactor * (3f - 2f * downFactor)
-                val diameter = strokeWidth * (0.26f + 1.24f * smoothDir) * 0.35f + outlineExtra
-                canvas.drawCircle(pos[0], pos[1], diameter * 0.5f, workPaint)
-            }
-        } while (pm.nextContour())
-
-        if (!drewAny) {
-            workPaint.style = Paint.Style.STROKE
-            workPaint.strokeWidth = strokeWidth + outlineExtra
-            canvas.drawPath(path, workPaint)
-        }
-
-        workPaint.style = prevStyle
-        workPaint.strokeCap = prevCap
     }
 
     private fun drawPencilStroke(

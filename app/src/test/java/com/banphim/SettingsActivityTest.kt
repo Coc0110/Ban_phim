@@ -20,7 +20,7 @@ class SettingsActivityTest {
     fun `changing brush, grid, and outline settings persists and updates live preview`() {
         val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
 
-        activity.findViewById<View>(R.id.brushBrush).performClick()
+        activity.findViewById<View>(R.id.brushPencil).performClick()
         activity.findViewById<SwitchCompat>(R.id.switchShowGrid).isChecked = false
 
         val stripOutline = activity.findViewById<ColorStripView>(R.id.stripOutlineColor)
@@ -38,7 +38,7 @@ class SettingsActivityTest {
         activity.findViewById<SwitchCompat>(R.id.switchStickerOutline).isChecked = false
 
         val prefs = activity.getSharedPreferences("banphim_prefs", Context.MODE_PRIVATE)
-        assertEquals("BRUSH", prefs.getString("pen_style", "NORMAL"))
+        assertEquals("PENCIL", prefs.getString("pen_style", "NORMAL"))
         assertFalse(prefs.getBoolean("show_grid", true))
         assertFalse(prefs.getBoolean("sticker_outline_enabled", true))
     }

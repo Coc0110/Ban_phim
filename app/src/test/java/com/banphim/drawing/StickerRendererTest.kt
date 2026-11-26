@@ -115,7 +115,7 @@ class StickerRendererTest {
             color = Color.BLUE,
             strokeWidth = 10f,
             bounds = RectF(10f, 10f, 60f, 10f),
-            style = PenStyle.BRUSH
+            style = PenStyle.FOUNTAIN
         )
         val noOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 0f)
         val customOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 8f, outlineColor = Color.YELLOW)

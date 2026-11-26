@@ -5,7 +5,6 @@ import android.graphics.RectF
 
 enum class PenStyle {
     NORMAL,
-    BRUSH,
     PENCIL,
     FOUNTAIN
 }

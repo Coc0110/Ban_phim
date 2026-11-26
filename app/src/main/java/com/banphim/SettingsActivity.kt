@@ -25,9 +25,9 @@ class SettingsActivity : AppCompatActivity() {
 
         val brushSamples = listOf(
             findViewById<BrushSampleView>(R.id.brushNormal) to PenStyle.NORMAL,
-            findViewById<BrushSampleView>(R.id.brushGlow) to PenStyle.GLOW,
-            findViewById<BrushSampleView>(R.id.brushDashed) to PenStyle.DASHED,
-            findViewById<BrushSampleView>(R.id.brushChalk) to PenStyle.CHALK
+            findViewById<BrushSampleView>(R.id.brushBrush) to PenStyle.BRUSH,
+            findViewById<BrushSampleView>(R.id.brushPencil) to PenStyle.PENCIL,
+            findViewById<BrushSampleView>(R.id.brushFountain) to PenStyle.FOUNTAIN
         )
         var currentStyle = runCatching {
             PenStyle.valueOf(prefs.getString("pen_style", PenStyle.NORMAL.name) ?: PenStyle.NORMAL.name)

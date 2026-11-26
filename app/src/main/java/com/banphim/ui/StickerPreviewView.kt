@@ -66,10 +66,9 @@ class StickerPreviewView @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
-
     private val cardRect = RectF()
     private val clipPath = Path()
-    private val aloooPath = Path()
+    private val letteringPath = Path()
 
     fun effectiveCanvasColor(): Int {
         if (!outlineEnabled) return Color.WHITE
@@ -114,20 +113,24 @@ class StickerPreviewView @JvmOverloads constructor(
             }
         }
 
-        buildAloooPath(w, h)
+        buildAlooPath(w, h)
         val strokeW = 7f * density
-        val inkColor = Color.parseColor("#1E88E5")
-
         if (outlineEnabled) {
-            outlinePaint.color = outlineColor
-            outlinePaint.strokeWidth = strokeW + 6f * density
-            canvas.drawPath(aloooPath, outlinePaint)
+            PenStyleRenderer.drawOutline(
+                canvas = canvas,
+                path = letteringPath,
+                color = outlineColor,
+                baseStrokeWidth = strokeW,
+                outlineExtraWidth = 5.5f * density,
+                style = penStyle,
+                mainPaint = outlinePaint,
+                workPaint = glowPaint
+            )
         }
-
         PenStyleRenderer.drawStroke(
             canvas = canvas,
-            path = aloooPath,
-            color = inkColor,
+            path = letteringPath,
+            color = Color.parseColor("#1E88E5"),
             strokeWidth = strokeW,
             style = penStyle,
             mainPaint = mainPaint,
@@ -138,44 +141,62 @@ class StickerPreviewView @JvmOverloads constructor(
         canvas.drawRoundRect(cardRect, corner, corner, borderPaint)
     }
 
-    private fun buildAloooPath(w: Float, h: Float) {
-        aloooPath.reset()
-        val baseY = h * 0.70f
-        val topY = h * 0.28f
-        val midY = h * 0.52f
-        val startX = w * 0.14f
-        val unit = w * 0.105f
+    private fun buildAlooPath(w: Float, h: Float) {
+        letteringPath.reset()
+        val left = w * 0.10f
+        val span = w * 0.78f
+        fun x(fraction: Float) = left + span * fraction
 
-        // 'A'
-        aloooPath.moveTo(startX, baseY)
-        aloooPath.lineTo(startX + unit * 0.55f, topY)
-        aloooPath.lineTo(startX + unit * 1.1f, baseY)
-        aloooPath.moveTo(startX + unit * 0.22f, midY + 4f * density)
-        aloooPath.lineTo(startX + unit * 0.90f, midY + 4f * density)
+        // Slanted hand-drawn capital "A" rising toward the top-right.
+        letteringPath.moveTo(x(0.05f), h * 0.80f)
+        letteringPath.cubicTo(x(0.08f), h * 0.64f, x(0.11f), h * 0.45f, x(0.15f), h * 0.44f)
+        letteringPath.cubicTo(x(0.19f), h * 0.43f, x(0.22f), h * 0.60f, x(0.25f), h * 0.72f)
+        // Sweeping crossbar extending slightly past the left leg.
+        letteringPath.moveTo(x(0.01f), h * 0.66f)
+        letteringPath.cubicTo(x(0.08f), h * 0.64f, x(0.17f), h * 0.60f, x(0.24f), h * 0.58f)
 
-        // 'l'
-        val lx = startX + unit * 1.55f
-        aloooPath.moveTo(lx, topY)
-        aloooPath.lineTo(lx, baseY)
+        // Tall cursive "l" flowing into three connected, ascending "o" loops.
+        letteringPath.moveTo(x(0.26f), h * 0.67f)
+        letteringPath.cubicTo(x(0.28f), h * 0.54f, x(0.27f), h * 0.34f, x(0.31f), h * 0.34f)
+        letteringPath.cubicTo(x(0.35f), h * 0.34f, x(0.31f), h * 0.57f, x(0.35f), h * 0.63f)
+        letteringPath.cubicTo(x(0.38f), h * 0.68f, x(0.41f), h * 0.60f, x(0.43f), h * 0.54f)
 
-        // 'o' 'o' 'o'
-        val r = unit * 0.36f
-        val oy = baseY - r
-        aloooPath.addCircle(startX + unit * 2.35f, oy, r, Path.Direction.CW)
-        aloooPath.addCircle(startX + unit * 3.35f, oy, r, Path.Direction.CW)
-        aloooPath.addCircle(startX + unit * 4.35f, oy, r, Path.Direction.CW)
+        // First "o"
+        letteringPath.cubicTo(x(0.44f), h * 0.46f, x(0.52f), h * 0.45f, x(0.53f), h * 0.53f)
+        letteringPath.cubicTo(x(0.54f), h * 0.62f, x(0.46f), h * 0.65f, x(0.43f), h * 0.58f)
+        letteringPath.cubicTo(x(0.41f), h * 0.53f, x(0.45f), h * 0.47f, x(0.51f), h * 0.48f)
 
-        // '!!'
-        val ex1 = startX + unit * 5.25f
-        val ex2 = startX + unit * 5.85f
-        aloooPath.moveTo(ex1, topY)
-        aloooPath.lineTo(ex1, baseY - 12f * density)
-        aloooPath.moveTo(ex1, baseY - 2f * density)
-        aloooPath.lineTo(ex1, baseY)
+        // Second "o"
+        letteringPath.cubicTo(x(0.56f), h * 0.40f, x(0.64f), h * 0.39f, x(0.65f), h * 0.47f)
+        letteringPath.cubicTo(x(0.66f), h * 0.56f, x(0.58f), h * 0.59f, x(0.55f), h * 0.52f)
+        letteringPath.cubicTo(x(0.53f), h * 0.47f, x(0.57f), h * 0.41f, x(0.63f), h * 0.42f)
 
-        aloooPath.moveTo(ex2, topY)
-        aloooPath.lineTo(ex2, baseY - 12f * density)
-        aloooPath.moveTo(ex2, baseY - 2f * density)
-        aloooPath.lineTo(ex2, baseY)
+        // Third "o"
+        letteringPath.cubicTo(x(0.68f), h * 0.34f, x(0.76f), h * 0.33f, x(0.77f), h * 0.41f)
+        letteringPath.cubicTo(x(0.78f), h * 0.50f, x(0.70f), h * 0.53f, x(0.67f), h * 0.46f)
+        letteringPath.cubicTo(x(0.65f), h * 0.41f, x(0.69f), h * 0.35f, x(0.74f), h * 0.36f)
+
+        // Hand-drawn 5-pointed star above the last "o".
+        val sx = x(0.75f)
+        val sy = h * 0.21f
+        val rOuter = h * 0.085f
+        val rInner = h * 0.038f
+        val starTilt = -0.22
+        for (i in 0..10) {
+            val idx = i % 10
+            val r = if (idx % 2 == 0) rOuter else rInner
+            val angle = starTilt - Math.PI / 2.0 + idx * (Math.PI / 5.0)
+            val px = sx + (kotlin.math.cos(angle) * r).toFloat()
+            val py = sy + (kotlin.math.sin(angle) * r).toFloat()
+            if (i == 0) letteringPath.moveTo(px, py) else letteringPath.lineTo(px, py)
+        }
+        letteringPath.moveTo(sx - 1f * density, sy)
+        letteringPath.lineTo(sx + 1f * density, sy + 1f * density)
+
+        // Exclamation mark on the right.
+        letteringPath.moveTo(x(0.92f), h * 0.21f)
+        letteringPath.cubicTo(x(0.91f), h * 0.31f, x(0.90f), h * 0.40f, x(0.90f), h * 0.46f)
+        letteringPath.moveTo(x(0.89f), h * 0.55f)
+        letteringPath.cubicTo(x(0.88f), h * 0.57f, x(0.90f), h * 0.59f, x(0.91f), h * 0.57f)
     }
 }

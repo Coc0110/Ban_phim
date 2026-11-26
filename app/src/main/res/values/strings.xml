@@ -16,6 +16,8 @@
     <string name="btn_enable_keyboard">Bật</string>
     <string name="btn_keyboard_enabled">Đã bật</string>
     <string name="btn_open_settings">Cài đặt</string>
+    <string name="status_on">ON</string>
+    <string name="status_off">OFF</string>
 
     <string name="settings_title">Cài đặt</string>
     <string name="settings_pen_style_title">Nét bút</string>

@@ -6,11 +6,11 @@ import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import com.banphim.ui.PillToggleView
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var btnToggleKeyboard: Button
+    private lateinit var btnToggleKeyboard: PillToggleView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,14 +41,6 @@ class MainActivity : AppCompatActivity() {
     private fun refreshKeyboardStatus() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         val isEnabled = imm?.enabledInputMethodList?.any { it.packageName == packageName } == true
-        btnToggleKeyboard.text = getString(
-            if (isEnabled) R.string.btn_keyboard_enabled else R.string.btn_enable_keyboard
-        )
-        btnToggleKeyboard.setTextColor(
-            ContextCompat.getColor(
-                this,
-                if (isEnabled) R.color.status_done_text else R.color.send_bg
-            )
-        )
+        btnToggleKeyboard.setOn(isEnabled)
     }
 }

@@ -3,7 +3,6 @@ package com.banphim.drawing
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Build
@@ -75,13 +74,16 @@ object StickerRenderer {
 
         if (outlineWidthPx > 0f) {
             for (stroke in strokes) {
-                outlinePaint.strokeWidth = stroke.strokeWidth + outlineWidthPx * 2f
-                outlinePaint.pathEffect = if (stroke.style == PenStyle.DASHED) {
-                    DashPathEffect(floatArrayOf(stroke.strokeWidth * 1.4f, stroke.strokeWidth * 1.4f), 0f)
-                } else {
-                    null
-                }
-                canvas.drawPath(stroke.path, outlinePaint)
+                PenStyleRenderer.drawOutline(
+                    canvas = canvas,
+                    path = stroke.path,
+                    color = outlineColor,
+                    baseStrokeWidth = stroke.strokeWidth,
+                    outlineExtraWidth = outlineWidthPx * 2f,
+                    style = stroke.style,
+                    mainPaint = outlinePaint,
+                    workPaint = glowPaint
+                )
             }
         }
 

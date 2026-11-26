@@ -2,7 +2,6 @@ package com.banphim.ui
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -85,11 +84,10 @@ class BrushSampleView @JvmOverloads constructor(
             w - padX, midY - amp * 0.2f
         )
 
-        val strokeColor = if (penStyle == PenStyle.GLOW) Color.parseColor("#FFB300") else defaultStrokeColor
         PenStyleRenderer.drawStroke(
             canvas = canvas,
             path = wavePath,
-            color = strokeColor,
+            color = defaultStrokeColor,
             strokeWidth = 4.5f * density,
             style = penStyle,
             mainPaint = mainPaint,

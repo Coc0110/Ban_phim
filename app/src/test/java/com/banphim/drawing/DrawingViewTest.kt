@@ -54,4 +54,15 @@ class DrawingViewTest {
         )
         assertEquals(expectedHeight, view.measuredHeight)
     }
+
+    @Test
+    fun `setStrokeWidth applies to newly drawn strokes`() {
+        val view = DrawingView(ApplicationProvider.getApplicationContext())
+        view.setStrokeWidth(28f)
+
+        view.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 10f, 0))
+        view.dispatchTouchEvent(MotionEvent.obtain(0, 10, MotionEvent.ACTION_UP, 30f, 30f, 0))
+
+        assertEquals(28f, view.getStrokes().single().strokeWidth, 0.01f)
+    }
 }

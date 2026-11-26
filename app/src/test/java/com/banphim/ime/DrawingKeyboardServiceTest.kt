@@ -4,9 +4,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import com.banphim.R
+import com.banphim.drawing.BrushSizeSliderView
 import com.banphim.drawing.ColorStripView
 import com.banphim.drawing.DrawingView
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,12 +19,14 @@ import org.robolectric.shadows.ShadowToast
 @RunWith(RobolectricTestRunner::class)
 class DrawingKeyboardServiceTest {
     @Test
-    fun `touching drawing view collapses open color strips`() {
+    fun `touching drawing view collapses all open sliders`() {
         val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
         val root = service.onCreateInputView()
 
         val btnBg = root.findViewById<View>(R.id.btnBgColor)
         val stripBg = root.findViewById<ColorStripView>(R.id.stripBgColor)
+        val btnBrush = root.findViewById<View>(R.id.btnBrushSize)
+        val sliderBrush = root.findViewById<BrushSizeSliderView>(R.id.sliderBrushSize)
         val drawingView = root.findViewById<DrawingView>(R.id.drawingView)
 
         btnBg.performClick()
@@ -30,6 +34,34 @@ class DrawingKeyboardServiceTest {
 
         drawingView.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 50f, 50f, 0))
         assertEquals(View.GONE, stripBg.visibility)
+
+        btnBrush.performClick()
+        assertEquals(View.VISIBLE, sliderBrush.visibility)
+
+        drawingView.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 50f, 50f, 0))
+        assertEquals(View.GONE, sliderBrush.visibility)
+    }
+
+    @Test
+    fun `opening pen color closes brush size slider and vice versa`() {
+        val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        val root = service.onCreateInputView()
+
+        val btnBrush = root.findViewById<View>(R.id.btnBrushSize)
+        val sliderBrush = root.findViewById<BrushSizeSliderView>(R.id.sliderBrushSize)
+        val btnPen = root.findViewById<View>(R.id.btnPenColor)
+        val stripPen = root.findViewById<ColorStripView>(R.id.stripPenColor)
+
+        btnBrush.performClick()
+        assertEquals(View.VISIBLE, sliderBrush.visibility)
+
+        btnPen.performClick()
+        assertEquals(View.GONE, sliderBrush.visibility)
+        assertEquals(View.VISIBLE, stripPen.visibility)
+
+        btnBrush.performClick()
+        assertEquals(View.GONE, stripPen.visibility)
+        assertEquals(View.VISIBLE, sliderBrush.visibility)
     }
 
     @Test
@@ -42,16 +74,19 @@ class DrawingKeyboardServiceTest {
         drawingView.dispatchTouchEvent(MotionEvent.obtain(0, 10, MotionEvent.ACTION_UP, 30f, 30f, 0))
         assertEquals(1, drawingView.getStrokes().size)
 
-        root.findViewById<ImageButton>(R.id.btnSend).performClick()
+        root.findViewById<View>(R.id.btnSend).performClick()
 
         assertEquals(1, drawingView.getStrokes().size)
         assertTrue(ShadowToast.shownToastCount() >= 1)
     }
 
     @Test
-    fun `onEvaluateInputViewShown returns true even when hardware keyboard is present`() {
+    fun `onEvaluateInputViewShown returns true and toolbar controls are present`() {
         val service = Robolectric.buildService(DrawingKeyboardService::class.java).create().get()
+        val root = service.onCreateInputView()
         assertTrue(service.onEvaluateInputViewShown())
+        assertNotNull(root.findViewById<View>(R.id.btnBrushSize))
+        assertNotNull(root.findViewById<View>(R.id.btnSend))
     }
 
     @Test

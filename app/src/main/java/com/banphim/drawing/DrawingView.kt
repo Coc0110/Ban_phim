@@ -23,10 +23,27 @@ class DrawingView @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
+    }
+    private val gridPaint = Paint().apply {
+        strokeWidth = 1f * resources.displayMetrics.density
+    }
+    private val previewFillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val previewRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 1.5f * resources.displayMetrics.density
+        color = Color.WHITE
+    }
 
-    private var currentPenColor: Int = Color.parseColor("#111111")
-    private var currentCanvasColor: Int = Color.WHITE
-    private var currentStrokeWidth: Float = 12f * resources.displayMetrics.density
+    private var currentPenColor: Int = Color.parseColor("#FFF176")
+    private var currentCanvasColor: Int = Color.parseColor("#1C1E22")
+    private var currentStrokeWidth: Float = 10f * resources.displayMetrics.density
+    private var currentPenStyle: PenStyle = PenStyle.NORMAL
+    private var showGrid: Boolean = true
+    private var brushPreviewVisible: Boolean = false
 
     private var activePath: Path? = null
     private var lastX = 0f
@@ -41,6 +58,7 @@ class DrawingView @JvmOverloads constructor(
 
     fun setPenColor(color: Int) {
         currentPenColor = color
+        if (brushPreviewVisible) invalidate()
     }
 
     fun getPenColor(): Int = currentPenColor
@@ -52,6 +70,31 @@ class DrawingView @JvmOverloads constructor(
     }
 
     fun getCanvasColor(): Int = currentCanvasColor
+
+    fun setStrokeWidth(widthPx: Float) {
+        currentStrokeWidth = widthPx
+        if (brushPreviewVisible) invalidate()
+    }
+
+    fun getStrokeWidth(): Float = currentStrokeWidth
+
+    fun setPenStyle(style: PenStyle) {
+        currentPenStyle = style
+    }
+
+    fun setShowGrid(show: Boolean) {
+        if (showGrid != show) {
+            showGrid = show
+            invalidate()
+        }
+    }
+
+    fun setBrushPreviewVisible(visible: Boolean) {
+        if (brushPreviewVisible != visible) {
+            brushPreviewVisible = visible
+            invalidate()
+        }
+    }
 
     fun undo() {
         if (history.undo()) {
@@ -89,15 +132,54 @@ class DrawingView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (showGrid) {
+            drawSubtleGrid(canvas)
+        }
         for (stroke in history.strokes()) {
-            paint.color = stroke.color
-            paint.strokeWidth = stroke.strokeWidth
-            canvas.drawPath(stroke.path, paint)
+            drawStyledStroke(canvas, stroke.path, stroke.color, stroke.strokeWidth, stroke.style)
         }
         activePath?.let { path ->
-            paint.color = currentPenColor
-            paint.strokeWidth = currentStrokeWidth
-            canvas.drawPath(path, paint)
+            drawStyledStroke(canvas, path, currentPenColor, currentStrokeWidth, currentPenStyle)
+        }
+        if (brushPreviewVisible) {
+            val cx = width / 2f
+            val cy = height / 2f
+            val r = currentStrokeWidth / 2f
+            previewFillPaint.color = currentPenColor
+            canvas.drawCircle(cx, cy, r, previewFillPaint)
+            canvas.drawCircle(cx, cy, r, previewRingPaint)
+        }
+    }
+
+    private fun drawStyledStroke(
+        canvas: Canvas,
+        path: Path,
+        color: Int,
+        strokeWidth: Float,
+        style: PenStyle
+    ) {
+        PenStyleRenderer.drawStroke(canvas, path, color, strokeWidth, style, paint, glowPaint)
+    }
+
+    private fun drawSubtleGrid(canvas: Canvas) {
+        val step = 28f * resources.displayMetrics.density
+        val luminance = (0.299 * Color.red(currentCanvasColor) +
+            0.587 * Color.green(currentCanvasColor) +
+            0.114 * Color.blue(currentCanvasColor)) / 255.0
+        gridPaint.color = if (luminance < 0.5) {
+            Color.argb(18, 255, 255, 255)
+        } else {
+            Color.argb(18, 0, 0, 0)
+        }
+        var x = step
+        while (x < width) {
+            canvas.drawLine(x, 0f, x, height.toFloat(), gridPaint)
+            x += step
+        }
+        var y = step
+        while (y < height) {
+            canvas.drawLine(0f, y, width.toFloat(), y, gridPaint)
+            y += step
         }
     }
 
@@ -132,7 +214,7 @@ class DrawingView @JvmOverloads constructor(
                 path.lineTo(x, y)
                 val bounds = RectF()
                 path.computeBounds(bounds, true)
-                history.push(Stroke(path, currentPenColor, currentStrokeWidth, bounds))
+                history.push(Stroke(path, currentPenColor, currentStrokeWidth, bounds, currentPenStyle))
                 activePath = null
                 invalidate()
                 onHistoryChanged?.invoke()

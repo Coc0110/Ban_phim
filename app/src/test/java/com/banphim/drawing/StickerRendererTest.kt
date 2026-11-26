@@ -107,4 +107,41 @@ class StickerRendererTest {
         assertTrue(file.exists() && file.length() > 0L)
         dir.deleteRecursively()
     }
+
+    @Test
+    fun `renderBitmap supports custom outline color and disabled outline`() {
+        val stroke = Stroke(
+            path = Path().apply { moveTo(10f, 10f); lineTo(60f, 10f) },
+            color = Color.BLUE,
+            strokeWidth = 10f,
+            bounds = RectF(10f, 10f, 60f, 10f),
+            style = PenStyle.FOUNTAIN
+        )
+        val noOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 0f)
+        val customOutline = StickerRenderer.renderBitmap(listOf(stroke), outlineWidthPx = 8f, outlineColor = Color.YELLOW)
+        assertNotNull(noOutline)
+        assertNotNull(customOutline)
+        assertTrue(customOutline!!.width > noOutline!!.width)
+    }
+
+    @Test
+    fun `renderBitmap supports pencil and fountain pen styles`() {
+        val pencilStroke = Stroke(
+            path = Path().apply { moveTo(10f, 10f); lineTo(80f, 30f) },
+            color = Color.MAGENTA,
+            strokeWidth = 12f,
+            bounds = RectF(10f, 10f, 80f, 30f),
+            style = PenStyle.PENCIL
+        )
+        val fountainStroke = Stroke(
+            path = Path().apply { moveTo(10f, 40f); lineTo(80f, 70f) },
+            color = Color.BLUE,
+            strokeWidth = 12f,
+            bounds = RectF(10f, 40f, 80f, 70f),
+            style = PenStyle.FOUNTAIN
+        )
+        val bmp = StickerRenderer.renderBitmap(listOf(pencilStroke, fountainStroke))
+        assertNotNull(bmp)
+        assertTrue(bmp!!.width > 0 && bmp.height > 0)
+    }
 }

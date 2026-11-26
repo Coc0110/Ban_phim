@@ -17,7 +17,8 @@ object StickerRenderer {
         strokes: List<Stroke>,
         maxSizePx: Int = 512,
         outlineWidthPx: Float = 8f,
-        paddingPx: Float = 16f
+        paddingPx: Float = 16f,
+        outlineColor: Int = Color.WHITE
     ): Bitmap? {
         if (strokes.isEmpty()) return null
 
@@ -37,7 +38,7 @@ object StickerRenderer {
         }
         val unionBounds = RectF(minLeft, minTop, maxRight, maxBottom)
 
-        val expand = maxStrokeWidth / 2f + outlineWidthPx + paddingPx
+        val expand = maxStrokeWidth + outlineWidthPx + paddingPx
         unionBounds.inset(-expand, -expand)
 
         val contentWidth = max(1f, unionBounds.width())
@@ -56,7 +57,13 @@ object StickerRenderer {
             style = Paint.Style.STROKE
             strokeCap = Paint.Cap.ROUND
             strokeJoin = Paint.Join.ROUND
-            color = Color.WHITE
+            color = outlineColor
+        }
+
+        val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
         }
 
         val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -67,15 +74,29 @@ object StickerRenderer {
 
         if (outlineWidthPx > 0f) {
             for (stroke in strokes) {
-                outlinePaint.strokeWidth = stroke.strokeWidth + outlineWidthPx * 2f
-                canvas.drawPath(stroke.path, outlinePaint)
+                PenStyleRenderer.drawOutline(
+                    canvas = canvas,
+                    path = stroke.path,
+                    color = outlineColor,
+                    baseStrokeWidth = stroke.strokeWidth,
+                    outlineExtraWidth = outlineWidthPx * 2f,
+                    style = stroke.style,
+                    mainPaint = outlinePaint,
+                    workPaint = glowPaint
+                )
             }
         }
 
         for (stroke in strokes) {
-            strokePaint.color = stroke.color
-            strokePaint.strokeWidth = stroke.strokeWidth
-            canvas.drawPath(stroke.path, strokePaint)
+            PenStyleRenderer.drawStroke(
+                canvas = canvas,
+                path = stroke.path,
+                color = stroke.color,
+                strokeWidth = stroke.strokeWidth,
+                style = stroke.style,
+                mainPaint = strokePaint,
+                glowPaint = glowPaint
+            )
         }
 
         return bitmap
@@ -85,8 +106,18 @@ object StickerRenderer {
         renderToFile(strokes, cacheDir, "image/png")
 
     @Suppress("DEPRECATION")
-    fun renderToFile(strokes: List<Stroke>, cacheDir: File, mimeType: String): File? {
-        val bitmap = renderBitmap(strokes) ?: return null
+    fun renderToFile(
+        strokes: List<Stroke>,
+        cacheDir: File,
+        mimeType: String,
+        outlineWidthPx: Float = 8f,
+        outlineColor: Int = Color.WHITE
+    ): File? {
+        val bitmap = renderBitmap(
+            strokes = strokes,
+            outlineWidthPx = outlineWidthPx,
+            outlineColor = outlineColor
+        ) ?: return null
         val stickerDir = File(cacheDir, "stickers").apply { mkdirs() }
         stickerDir.listFiles()?.forEach { old ->
             if (old.isFile && System.currentTimeMillis() - old.lastModified() > 60 * 60 * 1000L) {

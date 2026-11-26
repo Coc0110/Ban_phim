@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="paper_bg">#141518</color>
+    <color name="paper_grid_line">#2EFFD54F</color>
+    <color name="card_bg">#E01E2026</color>
+    <color name="card_stroke">#353844</color>
+    <color name="divider_color">#2C303A</color>
+    <color name="input_bg">#16181D</color>
+    <color name="btn_secondary_bg">#222938</color>
+    <color name="btn_secondary_stroke">#394B6E</color>
+    <color name="ad_slot_bg">#EB1B1D23</color>
+    <color name="ad_slot_text">#8E97A8</color>
+    <color name="badge_done_bg">#1B3A24</color>
+    <color name="badge_pending_bg">#3D2612</color>
+    <color name="text_primary">#F3F5F9</color>
+    <color name="text_secondary">#A8B0C0</color>
+    <color name="status_done_text">#81C784</color>
+    <color name="status_pending_text">#FFB74D</color>
+</resources>

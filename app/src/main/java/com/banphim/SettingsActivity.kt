@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
@@ -114,9 +115,16 @@ class SettingsActivity : AppCompatActivity() {
         val stripOutline = findViewById<ColorStripView>(R.id.stripOutlineColor)
         stripOutline.orientation = ColorStripView.Orientation.HORIZONTAL
         stripOutline.autoHideOnRelease = false
-        stripOutline.setSelectedColor(prefs.getInt("sticker_outline_color", Color.WHITE))
+        val outlineChip = findViewById<View>(R.id.outlineColorChip)
+        fun updateOutlineChip(color: Int) {
+            (outlineChip.background.mutate() as? GradientDrawable)?.setColor(color)
+        }
+        val savedOutlineColor = prefs.getInt("sticker_outline_color", Color.WHITE)
+        stripOutline.setSelectedColor(savedOutlineColor)
+        updateOutlineChip(savedOutlineColor)
         stripOutline.onColorSelected = { color ->
             prefs.edit().putInt("sticker_outline_color", color).apply()
+            updateOutlineChip(color)
         }
 
         noScrollZones = listOf(keyboardRoot, stripOutline)

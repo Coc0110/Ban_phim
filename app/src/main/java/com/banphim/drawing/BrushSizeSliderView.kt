@@ -14,8 +14,9 @@ class BrushSizeSliderView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private val minStrokePx = 3f * resources.displayMetrics.density
-    private val maxStrokePx = 26f * resources.displayMetrics.density
+    private val density = resources.displayMetrics.density
+    private var minStrokePx = 3f * density
+    private var maxStrokePx = 26f * density
 
     var progress: Float = 0.35f
         private set
@@ -40,6 +41,21 @@ class BrushSizeSliderView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         color = Color.parseColor("#66000000")
         strokeWidth = 1.5f * resources.displayMetrics.density
+    }
+
+    /** Mau phan thanh da keo. But ve: vang (mac dinh), but tay: xanh nhat. */
+    var accentColor: Int
+        get() = activeTrackPaint.color
+        set(value) {
+            activeTrackPaint.color = value
+            invalidate()
+        }
+
+    /** Doi khoang kich co (dp). Goi truoc setStrokeWidthPx. Mac dinh 3dp - 26dp. */
+    fun setRangeDp(minDp: Float, maxDp: Float) {
+        minStrokePx = minDp * density
+        maxStrokePx = maxDp * density
+        invalidate()
     }
 
     fun show() {

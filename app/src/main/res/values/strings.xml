@@ -30,6 +30,7 @@
     <string name="toast_unsupported_field">Ứng dụng này không hỗ trợ nhận nhãn dán trực tiếp. Đã sao chép vào bộ nhớ tạm.</string>
     
     <string name="settings_test_title">Bàn phím thử</string>
-    <string name="settings_test_hint">Vẽ rồi bấm nút gửi để xem nhãn dán</string>
     <string name="btn_test_back">Quay lại</string>
+    <string name="btn_eraser">Tẩy</string>
+    <string name="clear_undo_label">Đã xóa · Hoàn tác</string>
 </resources>
